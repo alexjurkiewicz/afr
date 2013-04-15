@@ -51,6 +51,13 @@ class Creature(object):
         else:
             raise AttributeError
 
+    def find_combat_target(self):
+        candidates = [c for c in CREATURES if c.alive and c.team != self.team]
+        try:
+            return min(candidates, key=lambda c: MAP.distance_between(self.x, self.y, c.x, c.y))
+        except ValueError: # min can't handle empty lists
+            return None
+
     def attack(self, defender):
         attacker_str = random.randint(0, self.strength)
         defender_str = random.randint(0, defender.strength)
@@ -146,7 +153,7 @@ def run_creature_brain(c):
     state = c.brainstate
     
     # Find a target
-    target = find_combat_target(c)
+    target = c.find_combat_target()
     if target:
         logging.debug("Found target: %s" % target.name)
         state['combat_target'] = target
@@ -160,13 +167,6 @@ def run_creature_brain(c):
             c.y += dy
     else:
         logging.debug("Found no combat target.")
-
-def find_combat_target(creature):
-    candidates = [c for c in CREATURES if c.alive and c.team != creature.team]
-    try:
-        return min(candidates, key=lambda c: MAP.distance_between(creature.x, creature.y, c.x, c.y))
-    except ValueError: # min can't handle empty lists
-        return None
 
 def tick():
     for c in CREATURES:
