@@ -180,11 +180,14 @@ if __name__ == '__main__':
         # Creature init
         CREATURES = []
 
-        CREATURES.append(Creature('Urist', 'dwarf', x=0, y=0, strength=10, hp=100))
-        CREATURES.append(Creature('Gobbo1', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=6, hp=40))
-        CREATURES.append(Creature('Gobbo2', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=6, hp=40))
-        CREATURES.append(Creature('Gobbo3', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=6, hp=40))
-        CREATURES.append(Creature('Gobbo4', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=6, hp=40))
+        CREATURES.append(Creature('Urist1', 'dwarf', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Urist2', 'dwarf', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Urist3', 'dwarf', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Urist4', 'dwarf', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Gobbo1', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Gobbo2', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Gobbo3', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Gobbo4', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
 
         # PyGame init
         screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -219,4 +222,3 @@ if __name__ == '__main__':
     finally:
         pygame.quit()
     sys.exit()
-
