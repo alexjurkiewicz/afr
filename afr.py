@@ -2,31 +2,47 @@ import random, sys, pygame, os, time, collections, math, logging
 
 logging.basicConfig(level=logging.DEBUG)
 
+###############
+# CONFIGURATION
+###############
+MAP_WIDTH = 30
+MAP_HEIGHT = 23
+
 # Window init
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 600
+RES_X = 1024
+RES_Y = 768
 
+# Display init
 pygame.init()
-font = pygame.font.SysFont('couriernew', 16)
-TILE_WIDTH, TILE_HEIGHT = font.size('m')
+screen = pygame.display.set_mode((RES_X, RES_Y))
+TILE_WIDTH = TILE_HEIGHT = 32
+WINDOW_TILES_X = RES_X // TILE_WIDTH
+WINDOW_TILES_Y = RES_Y // TILE_HEIGHT
 
-MAP_WIDTH = WINDOW_WIDTH // TILE_WIDTH
-MAP_HEIGHT = WINDOW_HEIGHT // TILE_HEIGHT
+def load_icon(path):
+    '''Load an icon relative to the res subdir'''
+    image = pygame.image.load(os.path.join('res', path))
+    image = image.convert()
+    return pygame.transform.smoothscale(image, (32,32))
 
 TILE_TYPE = { 'dirt': { 'passable' : True,
-                        'icon': font.render(' ', False, (0,0,0)), },
+                        'icon': load_icon('black32.png'), },
               'floor': { 'passable': True,
-                         'icon': font.render('_', False, (0,0,0)), },
-               'stone': { 'passable' : False, 'icon': font.render('#', False, (0,0,0))},
+                         'icon': load_icon('black32.png'), },
+               'stone': { 'passable' : False,
+                          'icon': load_icon('stone-tower-grey.png'), },
+              'boundary': { 'passable': False,
+                            'icon': load_icon('mountaintop.png'), },
                }
 
-font.set_bold(True)
-CREATURE_TYPE = { 'dwarf': { 'icon': font.render('@', False, (185,122,87), (255,255,255)),
-                             'icondead': font.render('@', False, (185,122,87), (136,0,21)),
-                             'team': 'dwarves', },
-                   'goblin': { 'icon': font.render('g', False, (0,128,0), (255,255,255)),
-                               'icondead': font.render('g', False, (0,128,0), (136,0,21)),
-                               'team': 'goblins', },
+CREATURE_TYPE = { 'dwarf': { \
+                        'icon': load_icon('horse-head-yellow.png'),
+                        'icondead': load_icon('skull-crossed-bones.png'),
+                        'team': 'dwarves', },
+                    'goblin': { \
+                        'icon': load_icon('imp-laugh-green.png'),
+                        'icondead': load_icon('skull-crossed-bones.png'),
+                        'team': 'goblins', },
                    }
 
 class Creature(object):
@@ -63,13 +79,13 @@ class Creature(object):
         defender_str = random.randint(0, defender.strength)
 
         if attacker_str == 0 or defender_str > attacker_str:
-            dmg = (defender_str - attacker_str)
+            dmg = (defender_str - attacker_str)//2
             self.hp -= dmg
-            print("%s blocks and counterattacks %s for %s damage!" % (defender.name, self.name, dmg))
+            print("%s attacks %s but they block and counterattack for %s damage! (%shp remaining)" % (self.name, defender.name, dmg, self.hp))
         elif defender_str == 0 or attacker_str > defender_str:
             dmg = (attacker_str - defender_str)
-            print("%s hits %s for %s damage!" % (self.name, defender.name, dmg))
             defender.hp -= dmg
+            print("%s hits %s for %s damage! (%shp remaining)" % (self.name, defender.name, dmg, defender.hp))
         else:
             print("Mutual block!")
 
@@ -88,6 +104,13 @@ class Map(object):
         
     def generate(self):
         self.map = [[MapTile('dirt') if random.random() > 0.20 else MapTile('stone') for _ in range(MAP_WIDTH)] for _ in range(MAP_HEIGHT)]
+        for x in self.map[0]:
+            x.type = 'boundary'
+        for x in self.map[-1]:
+            x.type = 'boundary'
+        for y in self.map:
+            y[0].type = 'boundary'
+            y[-1].type = 'boundary'
 
     def pathfind_to(self, x1, y1, x2, y2):
         '''stupid pathfinding until i implement a*'''
@@ -127,35 +150,59 @@ class Map(object):
 
     def tile_traversable(self, x,y):
         '''Is given tile traversable'''
-        return MAP.map[y][x].typestats['passable'] and \
-               not any([ c.x == x and c.y == y for c in CREATURES]) and \
-               x >= 0 and y >= 0
+        return 0 <= x < self.width and 0 <= y < self.height and \
+               self.map[y][x].passable and \
+               not any([ c.x == x and c.y == y for c in CREATURES])
 
 class MapTile(object):
     def __init__(self, type):
         self.type = type
 
-        self.typestats = TILE_TYPE[self.type]
+    def __getattr__(self, key):
+        '''If an attribute isn't found, look for it in the generic maptile type dict'''
+        if key in TILE_TYPE[self.type]:
+            return TILE_TYPE[self.type][key]
+        else:
+            raise AttributeError
 
-def draw_map(m, screen):
-    buffer = {}
-    for y in range(len(m.map)):
-        for x in range(len(m.map[y])):
-            screen.blit(m.map[y][x].typestats['icon'], (TILE_WIDTH*x, TILE_HEIGHT*y))
+def draw_map(m, screen, startx=0, starty=0, clamp_to_map=True):
+    '''Draw the map starting from x,y'''
+    screen.fill((0,0,0))
+
+    # Clamp draw rectangle to map border
+    if clamp_to_map:
+        if startx + WINDOW_TILES_X > m.width:
+            startx = m.width - WINDOW_TILES_X
+        if starty + WINDOW_TILES_Y > m.height:
+            starty = m.height - WINDOW_TILES_Y
+
+        startx = 0 if startx < 0 else startx
+        starty = 0 if starty < 0 else starty
+
+
+    endx = max([min([startx + WINDOW_TILES_X, m.width]), 0])
+    endy = max([min([starty + WINDOW_TILES_Y, m.height]), 0])
+    
+    logging.debug("Drawing map from %s, %s to %s, %s" % (startx, starty, endx, endy))
+
+    for j in range(starty, endy):
+        for i in range(startx, endx):
+            #print("%s,%s" % (i,j))
+            if i >= 0 and j >= 0:
+                screen.blit(m.map[j][i].icon, (TILE_WIDTH*(i-startx), TILE_HEIGHT*(j-starty)))
 
     for c in CREATURES:
-        screen.blit(c.icon if c.alive else c.icondead, (c.x*TILE_WIDTH, c.y*TILE_HEIGHT))
+        if startx <= c.x <= endx and starty <= c.y <= endy:
+            screen.blit(c.icon if c.alive else c.icondead, ((c.x-startx)*TILE_WIDTH, (c.y-starty)*TILE_HEIGHT))
 
 def run_creature_brain(c):
     '''Stupid generic creature brain'''
     if not c.alive: return # dont run ai for dead things
-    logging.debug("Running brain for %s" % c.name)
     state = c.brainstate
     
     # Find a target
     target = c.find_combat_target()
     if target:
-        logging.debug("Found target: %s" % target.name)
         state['combat_target'] = target
 
         # Move towards it / attack it
@@ -166,7 +213,11 @@ def run_creature_brain(c):
             c.x += dx
             c.y += dy
     else:
-        logging.debug("Found no combat target.")
+        # No target, wander around
+        if random.random() > 0.5:
+            (dx, dy) = MAP.pathfind_to(c.x, c.y, random.randint(0, MAP.width), random.randint(0, MAP.height))
+            c.x += dx
+            c.y += dy
 
 def tick():
     for c in CREATURES:
@@ -180,17 +231,28 @@ if __name__ == '__main__':
         # Creature init
         CREATURES = []
 
-        CREATURES.append(Creature('Urist1', 'dwarf', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-        CREATURES.append(Creature('Urist2', 'dwarf', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-        CREATURES.append(Creature('Urist3', 'dwarf', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-        CREATURES.append(Creature('Urist4', 'dwarf', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Urist1', 'dwarf', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=20, hp=40))
+        CREATURES.append(Creature('Urist2', 'dwarf', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=20, hp=40))
+        CREATURES.append(Creature('Urist3', 'dwarf', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=20, hp=40))
+        CREATURES.append(Creature('Urist4', 'dwarf', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=20, hp=40))
         CREATURES.append(Creature('Gobbo1', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
         CREATURES.append(Creature('Gobbo2', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
         CREATURES.append(Creature('Gobbo3', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
         CREATURES.append(Creature('Gobbo4', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Gobbo5', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Gobbo6', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Gobbo7', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Gobbo8', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Gobbo9', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Gobbo10', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Gobbo11', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Gobbo12', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Gobbo13', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+        CREATURES.append(Creature('Gobbo14', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
+
 
         # PyGame init
-        screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        screen = pygame.display.set_mode((RES_X, RES_Y))
         screen.fill((0,0,0))
         pygame.key.set_repeat(400, 50)
 
@@ -198,16 +260,18 @@ if __name__ == '__main__':
         n_tick = 0
         run = True
         do_tick = False
-        draw_map(MAP, screen)
-        pygame.display.update()
+        update_screen = True
         while run == True:
             if do_tick:
                 n_tick += 1
-                print("Tick: %s" % n_tick)
+                logging.debug("Tick: %s" % n_tick)
                 do_tick = False
                 tick()
-                draw_map(MAP, screen)
+                update_screen = True
+            if update_screen == True:
+                draw_map(MAP, screen, startx=(CREATURES[0].x - WINDOW_TILES_X//2), starty=(CREATURES[0].y - WINDOW_TILES_Y//2))
                 pygame.display.update()
+                update_screen = False
 
             event = pygame.event.wait()
             if event.type == pygame.QUIT:
