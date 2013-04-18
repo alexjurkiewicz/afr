@@ -20,10 +20,10 @@ CAMERA_TILES_X = RES_X // TILE_WIDTH
 CAMERA_TILES_Y = RES_Y // TILE_HEIGHT
 
 def load_icon(path):
-    '''Load an icon relative to the res subdir'''
+    '''Load an icon using path relative to res/'''
     image = pygame.image.load(os.path.join('res', path))
     image = image.convert()
-    return pygame.transform.smoothscale(image, (32,32))
+    return pygame.transform.smoothscale(image, (TILE_WIDTH, TILE_HEIGHT))
 
 TileType = collections.namedtuple('TileType', ['passable', 'icon'])
 TILE_TYPES = { \
