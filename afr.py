@@ -16,8 +16,8 @@ RES_Y = 768
 pygame.init()
 screen = pygame.display.set_mode((RES_X, RES_Y))
 TILE_WIDTH = TILE_HEIGHT = 32
-WINDOW_TILES_X = RES_X // TILE_WIDTH
-WINDOW_TILES_Y = RES_Y // TILE_HEIGHT
+CAMERA_TILES_X = RES_X // TILE_WIDTH
+CAMERA_TILES_Y = RES_Y // TILE_HEIGHT
 
 def load_icon(path):
     '''Load an icon relative to the res subdir'''
@@ -171,17 +171,17 @@ def draw_map(m, screen, startx=0, starty=0, clamp_to_map=True):
 
     # Clamp draw rectangle to map border
     if clamp_to_map:
-        if startx + WINDOW_TILES_X > m.width:
+        if startx + CAMERA_TILES_X > m.width:
             startx = m.width - WINDOW_TILES_X
-        if starty + WINDOW_TILES_Y > m.height:
+        if starty + CAMERA_TILES_Y > m.height:
             starty = m.height - WINDOW_TILES_Y
 
         startx = 0 if startx < 0 else startx
         starty = 0 if starty < 0 else starty
 
-
-    endx = max([min([startx + WINDOW_TILES_X, m.width]), 0])
-    endy = max([min([starty + WINDOW_TILES_Y, m.height]), 0])
+    # Don't try to draw tiles beyond the edge of the map
+    endx = max([min([startx + CAMERA_TILES_X, m.width]), 0])
+    endy = max([min([starty + CAMERA_TILES_Y, m.height]), 0])
     
     logging.debug("Drawing map from %s, %s to %s, %s" % (startx, starty, endx, endy))
 
