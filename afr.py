@@ -25,26 +25,19 @@ def load_icon(path):
     image = image.convert()
     return pygame.transform.smoothscale(image, (32,32))
 
-TILE_TYPE = { 'dirt': { 'passable' : True,
-                        'icon': load_icon('black32.png'), },
-              'floor': { 'passable': True,
-                         'icon': load_icon('black32.png'), },
-               'stone': { 'passable' : False,
-                          'icon': load_icon('stone-tower-grey.png'), },
-              'boundary': { 'passable': False,
-                            'icon': load_icon('mountaintop.png'), },
-               }
+TileType = collections.namedtuple('TileType', ['passable', 'icon'])
+TILE_TYPES = { \
+        'dirt': TileType(passable = True, icon = load_icon('black32.png')),
+        'floor': TileType(passable = True, icon = load_icon('black32.png')),
+        'stone': TileType(passable = False, icon = load_icon('stone-tower-grey.png')),
+        'boundary': TileType(passable = False, icon = load_icon('mountaintop.png')),
+        }
 
-CREATURE_TYPE = { 'dwarf': { \
-                        'icon': load_icon('horse-head-yellow.png'),
-                        'icondead': load_icon('skull-crossed-bones.png'),
-                        'team': 'dwarves', },
-                    'goblin': { \
-                        'icon': load_icon('imp-laugh-green.png'),
-                        'icondead': load_icon('skull-crossed-bones.png'),
-                        'team': 'goblins', },
-                   }
-
+CreatureType = collections.namedtuple('CreatureType', ['icon', 'icondead', 'team'])
+CREATURE_TYPES = { \
+        'dwarf': CreatureType(icon = load_icon('horse-head-yellow.png'), icondead = load_icon('skull-crossed-bones.png'), team = 'dwarves'),
+        'goblin': CreatureType(icon = load_icon('imp-laugh-green.png'), icondead = load_icon('skull-crossed-bones.png'), team = 'goblins'),
+        }
 class Creature(object):
     def __init__(self, name, type, x, y, strength, hp):
         self.name = name
@@ -54,18 +47,18 @@ class Creature(object):
         self.strength = strength
         self.hp = hp
 
-        self.typestats = CREATURE_TYPE[self.type]
+        self.typedata = CREATURE_TYPES[self.type]
         self.brainstate = {}
         self.alive = True
 
-        logging.debug("Spawned new creature. Name: %s, team: %s" % (self.name, self.team))
+        @property
+        def team(self):
+            if hasattr(self, '._team'):
+                return self._team
+            else:
+                return self.typedata.team
 
-    def __getattr__(self, key):
-        '''If an attribute isn't found, look for it in the generic creature type dict'''
-        if key in CREATURE_TYPE[self.type]:
-            return CREATURE_TYPE[self.type][key]
-        else:
-            raise AttributeError
+        logging.debug("Spawned new creature. Name: %s, team: %s" % (self.name, self.team))
 
     def find_combat_target(self):
         candidates = [c for c in CREATURES if c.alive and c.team != self.team]
@@ -151,19 +144,13 @@ class Map(object):
     def tile_traversable(self, x,y):
         '''Is given tile traversable'''
         return 0 <= x < self.width and 0 <= y < self.height and \
-               self.map[y][x].passable and \
+               self.map[y][x].tile.passable and \
                not any([ c.x == x and c.y == y for c in CREATURES])
 
 class MapTile(object):
     def __init__(self, type):
         self.type = type
-
-    def __getattr__(self, key):
-        '''If an attribute isn't found, look for it in the generic maptile type dict'''
-        if key in TILE_TYPE[self.type]:
-            return TILE_TYPE[self.type][key]
-        else:
-            raise AttributeError
+        self.tile = TILE_TYPES[self.type]
 
 def draw_map(m, screen, startx=0, starty=0, clamp_to_map=True):
     '''Draw the map starting from x,y'''
@@ -189,11 +176,11 @@ def draw_map(m, screen, startx=0, starty=0, clamp_to_map=True):
         for i in range(startx, endx):
             #print("%s,%s" % (i,j))
             if i >= 0 and j >= 0:
-                screen.blit(m.map[j][i].icon, (TILE_WIDTH*(i-startx), TILE_HEIGHT*(j-starty)))
+                screen.blit(m.map[j][i].tile.icon, (TILE_WIDTH*(i-startx), TILE_HEIGHT*(j-starty)))
 
     for c in CREATURES:
         if startx <= c.x <= endx and starty <= c.y <= endy:
-            screen.blit(c.icon if c.alive else c.icondead, ((c.x-startx)*TILE_WIDTH, (c.y-starty)*TILE_HEIGHT))
+            screen.blit(c.typedata.icon if c.alive else c.typedata.icondead, ((c.x-startx)*TILE_WIDTH, (c.y-starty)*TILE_HEIGHT))
 
 def run_creature_brain(c):
     '''Stupid generic creature brain'''
