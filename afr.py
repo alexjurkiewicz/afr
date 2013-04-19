@@ -152,6 +152,24 @@ class MapTile(object):
         self.type = type
         self.tile = TILE_TYPES[self.type]
 
+class Item(object):
+    def __init__(self, name, **kwargs):
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
+
+    def attach_component(self, component):
+        name = component.__class__.__name__
+        if hasattr(self, name):
+            raise AttributeError("Component by the name %s is already attached." % name)
+        else:
+            component.owner = self
+            setattr(self, name, component)
+
+class Weapon(object):
+    def __init__(self, owner, damage):
+        self.owner = owner
+        self.damage = damage
+
 def draw_map(m, screen, startx=0, starty=0, clamp_to_map=True):
     '''Draw the map starting from x,y'''
     screen.fill((0,0,0))
