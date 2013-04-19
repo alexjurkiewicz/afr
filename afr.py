@@ -51,14 +51,16 @@ class Creature(object):
         self.brainstate = {}
         self.alive = True
 
-        @property
-        def team(self):
-            if hasattr(self, '._team'):
-                return self._team
-            else:
-                return self.typedata.team
-
         logging.debug("Spawned new creature. Name: %s, team: %s" % (self.name, self.team))
+
+
+    @property
+    def team(self):
+        if hasattr(self, '._team'):
+            return self._team
+        else:
+            return self.typedata.team
+
 
     def find_combat_target(self):
         candidates = [c for c in CREATURES if c.alive and c.team != self.team]
@@ -158,7 +160,7 @@ class Item(object):
             setattr(self, key, kwargs[key])
 
     def attach_component(self, component):
-        name = component.__class__.__name__
+        name = component.__class__.__name__.lower()
         if hasattr(self, name):
             raise AttributeError("Component by the name %s is already attached." % name)
         else:
@@ -177,9 +179,9 @@ def draw_map(m, screen, startx=0, starty=0, clamp_to_map=True):
     # Clamp draw rectangle to map border
     if clamp_to_map:
         if startx + CAMERA_TILES_X > m.width:
-            startx = m.width - WINDOW_TILES_X
+            startx = m.width - CAMERA_TILES_X
         if starty + CAMERA_TILES_Y > m.height:
-            starty = m.height - WINDOW_TILES_Y
+            starty = m.height - CAMERA_TILES_Y
 
         startx = 0 if startx < 0 else startx
         starty = 0 if starty < 0 else starty
@@ -274,7 +276,7 @@ if __name__ == '__main__':
                 tick()
                 update_screen = True
             if update_screen == True:
-                draw_map(MAP, screen, startx=(CREATURES[0].x - WINDOW_TILES_X//2), starty=(CREATURES[0].y - WINDOW_TILES_Y//2))
+                draw_map(MAP, screen, startx=(CREATURES[0].x - MAP_WIDTH//2), starty=(CREATURES[0].y - MAP_HEIGHT//2))
                 pygame.display.update()
                 update_screen = False
 
