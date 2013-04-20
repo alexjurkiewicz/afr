@@ -72,3 +72,8 @@ class MapTile(object):
     def __init__(self, type):
         self.type = type
         self.tile = TILE_TYPES[self.type]
+
+global map
+def CreateMap(**kwargs):
+    global map
+    map = Map(**kwargs)

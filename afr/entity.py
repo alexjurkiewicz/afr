@@ -1,7 +1,6 @@
 class Entity(object):
-    def __init__(self, name, map, components):
+    def __init__(self, name, components):
         self.name = name
-        self._map = map
         for component in components:
             self.attach_component(component)
 
