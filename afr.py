@@ -155,9 +155,9 @@ class MapTile(object):
         self.tile = TILE_TYPES[self.type]
 
 class Item(object):
-    def __init__(self, name, **kwargs):
-        for key in kwargs:
-            setattr(self, key, kwargs[key])
+    def __init__(self, name, components):
+        for component in components:
+            self.attach_component(component)
 
     def attach_component(self, component):
         name = component.__class__.__name__.lower()
