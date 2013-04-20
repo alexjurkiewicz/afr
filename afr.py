@@ -38,12 +38,28 @@ CREATURE_TYPES = { \
         'dwarf': CreatureType(icon = load_icon('horse-head-yellow.png'), icondead = load_icon('skull-crossed-bones.png'), team = 'dwarves'),
         'goblin': CreatureType(icon = load_icon('imp-laugh-green.png'), icondead = load_icon('skull-crossed-bones.png'), team = 'goblins'),
         }
-class Creature(object):
-    def __init__(self, name, type, x, y, strength, hp):
+
+class Entity(object):
+    def __init__(self, name, components):
         self.name = name
+        for component in components:
+            self.attach_component(component)
+
+    def attach_component(self, component):
+        name = component.__class__.__name__.lower()
+        if hasattr(self, name):
+            raise AttributeError("Component by the name %s is already attached." % name)
+        else:
+            component.owner = self
+            setattr(self, name, component)
+
+class Weapon(object):
+    def __init__(self, damage):
+        self.damage = damage
+        
+class Creature(object):
+    def __init__(self, type, strength, hp):
         self.type = type
-        self.x = x
-        self.y = y
         self.strength = strength
         self.hp = hp
 
@@ -51,45 +67,46 @@ class Creature(object):
         self.brainstate = {}
         self.alive = True
 
-        logging.debug("Spawned new creature. Name: %s, team: %s" % (self.name, self.team))
-
-
     @property
     def team(self):
-        if hasattr(self, '._team'):
+        if hasattr(self, '_team'):
             return self._team
         else:
             return self.typedata.team
 
-
     def find_combat_target(self):
-        candidates = [c for c in CREATURES if c.alive and c.team != self.team]
+        candidates = [e for e in ENTITIES if e.creature.alive and e.creature.team != self.team]
         try:
-            return min(candidates, key=lambda c: MAP.distance_between(self.x, self.y, c.x, c.y))
+            return min(candidates, key=lambda c: MAP.distance_between(self.owner.maplocation.x, self.owner.maplocation.y, c.maplocation.x, c.maplocation.y))
         except ValueError: # min can't handle empty lists
             return None
 
     def attack(self, defender):
         attacker_str = random.randint(0, self.strength)
-        defender_str = random.randint(0, defender.strength)
+        defender_str = random.randint(0, defender.creature.strength)
 
         if attacker_str == 0 or defender_str > attacker_str:
             dmg = (defender_str - attacker_str)//2
             self.hp -= dmg
-            print("%s attacks %s but they block and counterattack for %s damage! (%shp remaining)" % (self.name, defender.name, dmg, self.hp))
+            print("%s attacks %s but they block and counterattack for %s damage! (%shp remaining)" % (self.owner.name, defender.name, dmg, self.hp))
         elif defender_str == 0 or attacker_str > defender_str:
             dmg = (attacker_str - defender_str)
-            defender.hp -= dmg
-            print("%s hits %s for %s damage! (%shp remaining)" % (self.name, defender.name, dmg, defender.hp))
+            defender.creature.hp -= dmg
+            print("%s hits %s for %s damage! (%shp remaining)" % (self.owner.name, defender.name, dmg, defender.creature.hp))
         else:
             print("Mutual block!")
 
         if self.hp <= 0:
-            print("%s died!" % self.name)
+            print("%s died!" % self.owner.name)
             self.alive = False
-        if defender.hp <= 0:
+        if defender.creature.hp <= 0:
             print("%s died!" % defender.name)
-            defender.alive = False
+            defender.creature.alive = False
+
+class MapLocation(object):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
 class Map(object):
     def __init__(self, width, height):
@@ -147,30 +164,12 @@ class Map(object):
         '''Is given tile traversable'''
         return 0 <= x < self.width and 0 <= y < self.height and \
                self.map[y][x].tile.passable and \
-               not any([ c.x == x and c.y == y for c in CREATURES])
+               not any([ c.maplocation.x == x and c.maplocation.y == y for c in ENTITIES])
 
 class MapTile(object):
     def __init__(self, type):
         self.type = type
         self.tile = TILE_TYPES[self.type]
-
-class Item(object):
-    def __init__(self, name, components):
-        for component in components:
-            self.attach_component(component)
-
-    def attach_component(self, component):
-        name = component.__class__.__name__.lower()
-        if hasattr(self, name):
-            raise AttributeError("Component by the name %s is already attached." % name)
-        else:
-            component.owner = self
-            setattr(self, name, component)
-
-class Weapon(object):
-    def __init__(self, owner, damage):
-        self.owner = owner
-        self.damage = damage
 
 def draw_map(m, screen, startx=0, starty=0, clamp_to_map=True):
     '''Draw the map starting from x,y'''
@@ -198,36 +197,36 @@ def draw_map(m, screen, startx=0, starty=0, clamp_to_map=True):
             if i >= 0 and j >= 0:
                 screen.blit(m.map[j][i].tile.icon, (TILE_WIDTH*(i-startx), TILE_HEIGHT*(j-starty)))
 
-    for c in CREATURES:
-        if startx <= c.x <= endx and starty <= c.y <= endy:
-            screen.blit(c.typedata.icon if c.alive else c.typedata.icondead, ((c.x-startx)*TILE_WIDTH, (c.y-starty)*TILE_HEIGHT))
+    for c in ENTITIES:
+        if startx <= c.maplocation.x <= endx and starty <= c.maplocation.y <= endy:
+            screen.blit(c.creature.typedata.icon if c.creature.alive else c.creature.typedata.icondead, ((c.maplocation.x-startx)*TILE_WIDTH, (c.maplocation.y-starty)*TILE_HEIGHT))
 
 def run_creature_brain(c):
     '''Stupid generic creature brain'''
-    if not c.alive: return # dont run ai for dead things
-    state = c.brainstate
+    if not c.creature.alive: return # dont run ai for dead things
+    state = c.creature.brainstate
     
     # Find a target
-    target = c.find_combat_target()
+    target = c.creature.find_combat_target()
     if target:
         state['combat_target'] = target
 
         # Move towards it / attack it
-        if MAP.distance_between(c.x,c.y,target.x,target.y) <= math.sqrt(2):
-            c.attack(target)
+        if MAP.distance_between(c.maplocation.x,c.maplocation.y,target.maplocation.x,target.maplocation.y) <= math.sqrt(2):
+            c.creature.attack(target)
         else:
-            (dx, dy) = MAP.pathfind_to(c.x, c.y, state['combat_target'].x, state['combat_target'].y)
-            c.x += dx
-            c.y += dy
+            (dx, dy) = MAP.pathfind_to(c.maplocation.x, c.maplocation.y, state['combat_target'].maplocation.x, state['combat_target'].maplocation.y)
+            c.maplocation.x += dx
+            c.maplocation.y += dy
     else:
         # No target, wander around
         if random.random() > 0.5:
-            (dx, dy) = MAP.pathfind_to(c.x, c.y, random.randint(0, MAP.width), random.randint(0, MAP.height))
-            c.x += dx
-            c.y += dy
+            (dx, dy) = MAP.pathfind_to(c.maplocation.x, c.maplocation.y, random.randint(0, MAP.width), random.randint(0, MAP.height))
+            c.maplocation.x += dx
+            c.maplocation.y += dy
 
 def tick():
-    for c in CREATURES:
+    for c in ENTITIES:
         run_creature_brain(c)
 
 if __name__ == '__main__':
@@ -236,27 +235,22 @@ if __name__ == '__main__':
         MAP = Map(MAP_WIDTH, MAP_HEIGHT)
         MAP.generate()
         # Creature init
-        CREATURES = []
+        ENTITIES = []
 
-        CREATURES.append(Creature('Urist1', 'dwarf', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=20, hp=40))
-        CREATURES.append(Creature('Urist2', 'dwarf', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=20, hp=40))
-        CREATURES.append(Creature('Urist3', 'dwarf', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=20, hp=40))
-        CREATURES.append(Creature('Urist4', 'dwarf', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=20, hp=40))
-        CREATURES.append(Creature('Gobbo1', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-        CREATURES.append(Creature('Gobbo2', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-        CREATURES.append(Creature('Gobbo3', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-        CREATURES.append(Creature('Gobbo4', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-        CREATURES.append(Creature('Gobbo5', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-        CREATURES.append(Creature('Gobbo6', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-        CREATURES.append(Creature('Gobbo7', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-        CREATURES.append(Creature('Gobbo8', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-        CREATURES.append(Creature('Gobbo9', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-        CREATURES.append(Creature('Gobbo10', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-        CREATURES.append(Creature('Gobbo11', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-        CREATURES.append(Creature('Gobbo12', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-        CREATURES.append(Creature('Gobbo13', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-        CREATURES.append(Creature('Gobbo14', 'goblin', x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), strength=10, hp=40))
-
+        ENTITIES.append( \
+            Entity('Urist', components = [
+                Creature('dwarf', strength=20, hp=40),
+                MapLocation(x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1)),
+                ]
+            )
+        )
+        ENTITIES.append( \
+            Entity('Gobbo', components = [
+                Creature('goblin', strength=20, hp=40),
+                MapLocation(x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1)),
+                ]
+            )
+        )
 
         # PyGame init
         screen = pygame.display.set_mode((RES_X, RES_Y))
@@ -276,7 +270,7 @@ if __name__ == '__main__':
                 tick()
                 update_screen = True
             if update_screen == True:
-                draw_map(MAP, screen, startx=(CREATURES[0].x - MAP_WIDTH//2), starty=(CREATURES[0].y - MAP_HEIGHT//2))
+                draw_map(MAP, screen, startx=0, starty=0)
                 pygame.display.update()
                 update_screen = False
 
