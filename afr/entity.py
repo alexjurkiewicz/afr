@@ -12,6 +12,13 @@ class Entity(object):
         else:
             component.owner = self
             setattr(self, name, component)
+    
+    def detach_component(self, component):
+        '''Detach component by name'''
+        if not hasattr(self, component):
+            raise AttributeError("No component named %s is attached." % component)
+        else:
+            delattr(self, component)
 
 global entities
 entities = []

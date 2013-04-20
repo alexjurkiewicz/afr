@@ -66,7 +66,7 @@ class Map(object):
         '''Is given tile traversable'''
         return 0 <= x < self.width and 0 <= y < self.height and \
                self.map[y][x].tile.passable and \
-               not any([ c.maplocation.x == x and c.maplocation.y == y for c in afr.entity.entities])
+               not any([ c.corporeal.x == x and c.corporeal.y == y for c in afr.entity.entities])
 
 class MapTile(object):
     def __init__(self, type):
