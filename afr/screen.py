@@ -43,7 +43,7 @@ def draw_map(m, screen, startx=0, starty=0, clamp_to_map=True):
         for i in range(startx, endx):
             #print("%s,%s" % (i,j))
             if i >= 0 and j >= 0:
-                screen.blit(m.map[j][i].tile.icon, (TILE_WIDTH*(i-startx), TILE_HEIGHT*(j-starty)))
+                screen.blit(m.getTile(i, j).tile.icon, (TILE_WIDTH*(i-startx), TILE_HEIGHT*(j-starty)))
 
     for c in afr.entity.entities:
         if startx <= c.corporeal.x <= endx and starty <= c.corporeal.y <= endy:

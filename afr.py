@@ -6,8 +6,8 @@ import afr.entity
 import afr.entitycomponents
 import afr.map
 
-MAP_WIDTH = 30
-MAP_HEIGHT = 23
+MAP_WIDTH = 10
+MAP_HEIGHT = 10
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -29,17 +29,33 @@ if __name__ == '__main__':
                 afr.entitycomponents.Fighter('dwarf', strength=20, hp=40, team='dwarves'),
                 afr.entitycomponents.Corporeal(x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), icon=afr.util.load_icon('horse-head-yellow.png')),
                 afr.entitycomponents.AI(),
+                afr.entitycomponents.Inventory(),
                 ]
             )
         )
+        #afr.entity.entities.append( \
+            #afr.entity.Entity('Gobbo1', components = [
+                #afr.entitycomponents.Fighter('goblin', strength=10, hp=40, team='goblins'),
+                #afr.entitycomponents.Corporeal(x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), icon=afr.util.load_icon('imp-laugh-green.png')),
+                #afr.entitycomponents.AI(),
+                #]
+            #)
+        #)
+        #afr.entity.entities.append( \
+            #afr.entity.Entity('Gobbo2', components = [
+                #afr.entitycomponents.Fighter('goblin', strength=10, hp=40, team='goblins'),
+                #afr.entitycomponents.Corporeal(x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), icon=afr.util.load_icon('imp-laugh-green.png')),
+                #afr.entitycomponents.AI(),
+                #]
+            #)
+        #)        
         afr.entity.entities.append( \
-            afr.entity.Entity('Gobbo', components = [
-                afr.entitycomponents.Fighter('goblin', strength=20, hp=40, team='goblins'),
-                afr.entitycomponents.Corporeal(x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), icon=afr.util.load_icon('imp-laugh-green.png')),
-                afr.entitycomponents.AI(),
+            afr.entity.Entity('Sword', components = [
+                afr.entitycomponents.Corporeal(x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), icon=afr.util.load_icon('energy-sword.png'), blocks_movement = False),                
+                afr.entitycomponents.Weapon(damage=20),
                 ]
             )
-        )
+        )        
         # PyGame init
         afr.screen.init_screen()
         pygame.key.set_repeat(400, 50)
