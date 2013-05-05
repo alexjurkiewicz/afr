@@ -17,7 +17,9 @@ class Map(object):
         self.height = height
         self.max_path_length = min([self.width * self.height, max_path_length])
         self.map = [[MapTile('dirt', x, y) for x in range(width)] for y in range(height)]
+        self.updateTileNeighbors()
         
+    def updateTileNeighbors(self):
         for x, y in itertools.product(range(self.width), range(self.height)):
             node = self.getTile(x, y)
             #n = 0
@@ -33,6 +35,7 @@ class Map(object):
     def generate(self):
         '''Generate a random game map'''
         self.map = [[MapTile('dirt', x, y) if random.random() > 0.2 else MapTile('stone', x, y) for x in range(self.width)] for y in range(self.height)]
+        self.updateTileNeighbors()
     
     def pathfind(self, x1, y1, x2, y2):
         '''return array of tiles which are a path between x1,y1 and x2,y2
@@ -59,7 +62,7 @@ class Map(object):
                 return path[-2::-1] # [::-1] to include current tile
             openset.remove(current)
             closedset.add(current)
-            #logging.debug("Working on node %s, %s (%s neighbors)" % (current.x, current.y, len(self.getTile(current.x, current.y).neighbors)))
+            logging.debug("Working on node %s, %s (%s neighbors)" % (current.x, current.y, len(self.getTile(current.x, current.y).neighbors)))
             for node in self.getTile(current.x, current.y).neighbors:
                 if node in closedset:
                     continue
@@ -107,7 +110,6 @@ class MapTile(object):
         # a star stuff
         self.g = 0
         self.h = 0
-        self.parent = None
         self.neighbors = []
     
     # a star stuff

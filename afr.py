@@ -6,8 +6,8 @@ import afr.entity
 import afr.entitycomponents
 import afr.map
 
-MAP_WIDTH = 10
-MAP_HEIGHT = 10
+MAP_WIDTH = 30
+MAP_HEIGHT = 30
 
 logging.basicConfig(level=logging.DEBUG, format="%(filename)s:%(lineno)d (%(funcName)s) %(message)s")
 
@@ -21,7 +21,7 @@ def main():
     try:
         # Mapgen
         afr.map.CreateMap(width = MAP_WIDTH, height = MAP_HEIGHT)
-        #afr.map.map.generate()
+        afr.map.map.generate()
         
         # Test creature init
         afr.entity.entities.append( \
@@ -43,7 +43,7 @@ def main():
         #)      
         afr.entity.entities.append( \
             afr.entity.Entity('Sword', components = [
-                afr.entitycomponents.Corporeal(x=8, y=8, icon=afr.util.load_icon('energy-sword.png'), blocks_movement = False),                
+                afr.entitycomponents.Corporeal(x=25, y=25, icon=afr.util.load_icon('energy-sword.png'), blocks_movement = False),                
                 afr.entitycomponents.Weapon(damage=20),
                 ]
             )
