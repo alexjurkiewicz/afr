@@ -87,11 +87,15 @@ class AI(object):
         # Find a target
         if 'target' not in state:
             if self.owner.has_component('inventory'):
-                state['target'] = self.owner.find_nearby_pickupable()
-                state['target_distance'] = 0
+                target = self.owner.find_nearby_pickupable()
+                if target:
+                    state['target'] = target
+                    state['target_distance'] = 0
             elif self.owner.has_component('fighter'):
-                state['target'] = self.owner.find_combat_target()
-                state['target_distance'] = 1
+                target = self.owner.find_combat_target()
+                if target:
+                    state['target'] = target
+                    state['target_distance'] = 1
             else:
                 logging.debug("Can't find a target for %s" % self.owner.name)
         
