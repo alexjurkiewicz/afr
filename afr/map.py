@@ -62,7 +62,7 @@ class Map(object):
                 return path[-2::-1] # [::-1] to include current tile
             openset.remove(current)
             closedset.add(current)
-            logging.debug("Working on node %s, %s (%s neighbors)" % (current.x, current.y, len(self.getTile(current.x, current.y).neighbors)))
+            #logging.debug("Working on node %s, %s (%s neighbors)" % (current.x, current.y, len(self.getTile(current.x, current.y).neighbors)))
             for node in self.getTile(current.x, current.y).neighbors:
                 if node in closedset:
                     continue

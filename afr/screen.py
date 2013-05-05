@@ -1,9 +1,9 @@
 import pygame, logging
 
-import afr.entity
+import afr.entity, afr.util
 
-RES_X = 1680
-RES_Y = 1050
+RES_X = 1024
+RES_Y = 768
 TILE_WIDTH = TILE_HEIGHT = 32
 
 # Display init
@@ -13,15 +13,47 @@ CAMERA_TILES_X = RES_X // TILE_WIDTH
 CAMERA_TILES_Y = RES_Y // TILE_HEIGHT
 
 global screen
+global last_x, last_y
+last_x, last_y = (0, 0)
 
 def init_screen():
     global screen
     screen = pygame.display.set_mode((RES_X, RES_Y))
     screen.fill((0,0,0))
 
-def draw_map(m, screen, startx=0, starty=0, clamp_to_map=True):
+def draw_map(m, screen, focus=None, clamp_to_map=True):
     '''Draw the map starting from x,y'''
     screen.fill((0,0,0))
+    
+    # If we have a focus, ensure it's within the middle half of the screen
+    if focus:
+        quarter_x = CAMERA_TILES_X // 4
+        half_x = CAMERA_TILES_X // 2
+        quarter_y = CAMERA_TILES_Y // 4
+        half_y = CAMERA_TILES_Y // 2
+        #print("Last view was %s,%s" % (last_x, last_y))
+        #print("Focus is at %s,%s" % (focus.x, focus.y))
+        if last_x + quarter_x <= focus.x <= last_x + half_x + quarter_x:
+            startx = last_x
+        else:
+            #print("Out of X focus")
+            min_start = focus.x - half_x - quarter_x
+            max_start = focus.x + half_x + quarter_x
+            #print("Clamping X to %s -- %s" % (min_start, max_start))
+            startx = afr.util.clamp(last_x, min_start, max_start)
+        
+        if last_y + quarter_y <= focus.y <= last_y + half_y + quarter_y:
+            starty = last_y
+        else:
+            #print("Out of Y focus")
+            min_start = focus.y - half_y - quarter_y
+            max_start = focus.y + half_y + quarter_y
+            #print("Clamping Y to %s -- %s" % (min_start, max_start))
+            starty = afr.util.clamp(last_y, min_start, max_start)
+    
+    global last_x, last_y
+    last_x = startx
+    last_y = starty
 
     # Clamp draw rectangle to map border
     if clamp_to_map:

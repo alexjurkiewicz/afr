@@ -6,8 +6,8 @@ import afr.entity
 import afr.entitycomponents
 import afr.map
 
-MAP_WIDTH = 30
-MAP_HEIGHT = 30
+MAP_WIDTH = 120
+MAP_HEIGHT = 120
 
 logging.basicConfig(level=logging.DEBUG, format="%(filename)s:%(lineno)d (%(funcName)s) %(message)s")
 
@@ -43,7 +43,7 @@ def main():
         #)      
         afr.entity.entities.append( \
             afr.entity.Entity('Sword', components = [
-                afr.entitycomponents.Corporeal(x=25, y=25, icon=afr.util.load_icon('energy-sword.png'), blocks_movement = False),                
+                afr.entitycomponents.Corporeal(x=115, y=115, icon=afr.util.load_icon('energy-sword.png'), blocks_movement = False),                
                 afr.entitycomponents.Weapon(damage=20),
                 ]
             )
@@ -65,7 +65,7 @@ def main():
                 tick()
                 update_screen = True
             if update_screen == True:
-                afr.screen.draw_map(afr.map.map, afr.screen.screen, startx=0, starty=0)
+                afr.screen.draw_map(afr.map.map, afr.screen.screen, focus=afr.entity.entities[0])
                 pygame.display.update()
                 update_screen = False
 
