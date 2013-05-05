@@ -114,9 +114,8 @@ class MapTile(object):
     
     # a star stuff
     def move_cost(self, other):
-        # diagonal = abs(self.x - other.x) == 1 and abs(self.y - other.y) == 1
-        # return math.sqrt(2) if diagonal else 1
-        return 1
+        diagonal = abs(self.x - other.x) == 1 and abs(self.y - other.y) == 1
+        return math.sqrt(2) if diagonal else 1
 
 global map
 def CreateMap(**kwargs):
