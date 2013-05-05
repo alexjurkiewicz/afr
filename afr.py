@@ -27,7 +27,7 @@ def main():
         afr.entity.entities.append( \
             afr.entity.Entity('Urist', components = [
                 afr.entitycomponents.Fighter('dwarf', strength=20, hp=40, team='dwarves'),
-                afr.entitycomponents.Corporeal(x=1, y=1, icon=afr.util.load_icon('horse-head-yellow.png')),
+                afr.entitycomponents.Corporeal(x=1, y=1, icon=afr.util.load_icon('horse-head-yellow.png'), zorder = 1),
                 afr.entitycomponents.AI(),
                 afr.entitycomponents.Inventory(),
                 ]

@@ -41,10 +41,18 @@ def draw_map(m, screen, startx=0, starty=0, clamp_to_map=True):
 
     for j in range(starty, endy):
         for i in range(startx, endx):
-            #print("%s,%s" % (i,j))
             if i >= 0 and j >= 0:
                 screen.blit(m.getTile(i, j).tile.icon, (TILE_WIDTH*(i-startx), TILE_HEIGHT*(j-starty)))
 
-    for c in afr.entity.entities:
-        if startx <= c.x <= endx and starty <= c.y <= endy:
-            screen.blit(c.icon, ((c.x-startx)*TILE_WIDTH, (c.y-starty)*TILE_HEIGHT))
+    entities_to_draw = {}
+    for e in afr.entity.entities:
+        if e.has_component('corporeal'):
+            if startx <= e.x <= endx and starty <= e.y <= endy:
+                z = e.zorder
+                if z in entities_to_draw:
+                    entities_to_draw[z].append(e)
+                else:
+                    entities_to_draw[z] = [e]
+    for z in sorted(entities_to_draw.keys()):
+        for e in entities_to_draw[z]:
+            screen.blit(e.icon, ((e.x-startx)*TILE_WIDTH, (e.y-starty)*TILE_HEIGHT))

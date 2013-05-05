@@ -53,13 +53,14 @@ class Fighter(object):
 
 class Corporeal(object):
     '''Entity exists on the map'''
-    def __init__(self, x, y, icon, blocks_movement = True):
+    def __init__(self, x, y, icon, blocks_movement = True, zorder = 0):
         self.x = x
         self.y = y
         self.icon = icon
         self.blocks_movement = blocks_movement
+        self.zorder = zorder
         
-        self.export = ['x', 'y', 'icon', 'blocks_movement', 'set_icon']
+        self.export = ['x', 'y', 'icon', 'blocks_movement', 'set_icon', 'zorder']
         
         self.__original_icon = icon
         
@@ -87,8 +88,10 @@ class AI(object):
         if 'target' not in state:
             if self.owner.has_component('inventory'):
                 state['target'] = self.owner.find_nearby_pickupable()
+                state['target_distance'] = 0
             elif self.owner.has_component('fighter'):
                 state['target'] = self.owner.find_combat_target()
+                state['target_distance'] = 1
             else:
                 logging.debug("Can't find a target for %s" % self.owner.name)
         
@@ -96,15 +99,17 @@ class AI(object):
             target = state['target']
             logging.debug("Using target: %s (%s, %s)" % (target.name, target.x, target.y))
             path = afr.map.map.pathfind(self.owner.x, self.owner.y, target.x, target.y)
-            if path != False:
-                logging.debug("Found path, %s steps. First step is %s, %s" % (len(path), dx, dy))
-            if path:
+            if path == False:
+                logging.debug("Can't find path!")
+            elif len(path) == state['target_distance']:
+                logging.debug("We're close enough to our destination.")
+                del(state['target'])
+            else:
                 dx = path[0].x - self.owner.x
                 dy = path[0].y - self.owner.y
-                
-            
-            self.owner.x += dx
-            self.owner.y += dy
+                logging.debug("Found path, %s steps. First step is %s, %s" % (len(path), dx, dy))
+                self.owner.x += dx
+                self.owner.y += dy
         else:
             # No target, wander around
             if random.random() > 0.5:
