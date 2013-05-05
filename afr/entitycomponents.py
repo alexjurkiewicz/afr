@@ -96,11 +96,12 @@ class AI(object):
             target = state['target']
             logging.debug("Using target: %s (%s, %s)" % (target.name, target.x, target.y))
             path = afr.map.map.pathfind(self.owner.x, self.owner.y, target.x, target.y)
-            print("Path: %s" % ", ".join(["%s, %s" % (t.x, t.y) for t in path]))
-            
-            dx = path[1].x - self.owner.x
-            dy = path[1].y - self.owner.y
-            logging.debug("Found path, %s steps. First step is %s, %s" % (len(path), dx, dy))
+            if path != False:
+                logging.debug("Found path, %s steps. First step is %s, %s" % (len(path), dx, dy))
+            if path:
+                dx = path[0].x - self.owner.x
+                dy = path[0].y - self.owner.y
+                
             
             self.owner.x += dx
             self.owner.y += dy

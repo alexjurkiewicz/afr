@@ -35,6 +35,8 @@ class Map(object):
         self.map = [[MapTile('dirt', x, y) if random.random() > 0.2 else MapTile('stone', x, y) for x in range(self.width)] for y in range(self.height)]
     
     def pathfind(self, x1, y1, x2, y2):
+        '''return array of tiles which are a path between x1,y1 and x2,y2
+        returns False if there is no path (care: a path of [] could be returned if you're already at the destination!)'''
         start = self.getTile(x1, y1)
         end = self.getTile(x2, y2)
         
@@ -53,8 +55,8 @@ class Map(object):
                     path.append(current)
                     current = parent[current]
                 path.append(current)
-                logging.debug("Found path for %s,%s to %s,%s in %s cycles (%s steps)" % (x1, y1, x2, y2, cycles, len(path)))
-                return path[::-1]
+                logging.debug("Found path for %s,%s to %s,%s in %s cycles (%s steps)" % (x1, y1, x2, y2, cycles, len(path)-1))
+                return path[-2::-1] # [::-1] to include current tile
             openset.remove(current)
             closedset.add(current)
             #logging.debug("Working on node %s, %s (%s neighbors)" % (current.x, current.y, len(self.getTile(current.x, current.y).neighbors)))
