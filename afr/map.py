@@ -35,10 +35,6 @@ class Map(object):
         self.map = [[MapTile('dirt', x, y) if random.random() > 0.2 else MapTile('stone', x, y) for x in range(self.width)] for y in range(self.height)]
     
     def pathfind(self, x1, y1, x2, y2):
-        for x in range(self.width):
-            for y in range(self.height):
-                self.getTile(x, y).parent = None
-        
         start = self.getTile(x1, y1)
         end = self.getTile(x2, y2)
         
@@ -46,15 +42,16 @@ class Map(object):
         closedset = set()
         current = start
         openset.add(current)
+        parent = {}
         cycles = 0
         while openset:
             cycles += 1
             current = min(openset, key=lambda t:t.g + t.h)
             if current == end:
                 path = []
-                while current.parent:
+                while current in parent:
                     path.append(current)
-                    current = current.parent
+                    current = parent[current]
                 path.append(current)
                 logging.debug("Found path for %s,%s to %s,%s in %s cycles (%s steps)" % (x1, y1, x2, y2, cycles, len(path)))
                 return path[::-1]
@@ -68,11 +65,11 @@ class Map(object):
                     new_g = current.g + current.move_cost(node)
                     if node.g > new_g:
                         node.g = new_g
-                        node.parent = current
+                        parent[node] = current
                 else:
                     node.g = current.g + current.move_cost(node)
                     node.h = self.distance_between(node.x, node.y, end.x, end.y)
-                    node.parent = current
+                    parent[node] = current
                     openset.add(node)
         # If we're here, we didn't find a path. Maybe return a partial path in future.
         logging.warning("Cound't find path!")
