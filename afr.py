@@ -6,8 +6,8 @@ import afr.entity
 import afr.entitycomponents
 import afr.map
 
-MAP_WIDTH = 120
-MAP_HEIGHT = 120
+MAP_WIDTH = 30
+MAP_HEIGHT = 30
 
 logging.basicConfig(level=logging.DEBUG, format="%(filename)s:%(lineno)d (%(funcName)s) %(message)s")
 
@@ -33,21 +33,21 @@ def main():
                 ]
             )
         )
-        #afr.entity.entities.append( \
-            #afr.entity.Entity('Gobbo1', components = [
-                #afr.entitycomponents.Fighter('goblin', strength=10, hp=40, team='goblins'),
-                #afr.entitycomponents.Corporeal(x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), icon=afr.util.load_icon('imp-laugh-green.png')),
-                #afr.entitycomponents.AI(),
-                #]
-            #)
-        #)      
+        afr.entity.entities.append( \
+            afr.entity.Entity('Gobbo1', components = [
+                afr.entitycomponents.Fighter('goblin', strength=10, hp=40, team='goblins'),
+                afr.entitycomponents.Corporeal(x=15, y=15, icon=afr.util.load_icon('imp-laugh-green.png')),
+                afr.entitycomponents.AI(),
+                ]
+            )
+        )
         afr.entity.entities.append( \
             afr.entity.Entity('Sword', components = [
-                afr.entitycomponents.Corporeal(x=115, y=115, icon=afr.util.load_icon('energy-sword.png'), blocks_movement = False),                
+                afr.entitycomponents.Corporeal(x=5, y=5 , icon=afr.util.load_icon('energy-sword.png'), blocks_movement = False, zorder = -1),                
                 afr.entitycomponents.Weapon(damage=20),
                 ]
             )
-        )        
+        )
         # PyGame init
         afr.screen.init_screen()
         pygame.key.set_repeat(400, 50)

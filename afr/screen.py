@@ -87,4 +87,5 @@ def draw_map(m, screen, focus=None, clamp_to_map=True):
                     entities_to_draw[z] = [e]
     for z in sorted(entities_to_draw.keys()):
         for e in entities_to_draw[z]:
-            screen.blit(e.icon, ((e.x-startx)*TILE_WIDTH, (e.y-starty)*TILE_HEIGHT))
+            logging.debug("Drawing %s" % e.name)
+            screen.blit(e.get_icon(), ((e.x-startx)*TILE_WIDTH, (e.y-starty)*TILE_HEIGHT))
