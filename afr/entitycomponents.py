@@ -6,6 +6,7 @@ import afr.map
 class Weapon(object):
     def __init__(self, damage):
         self.damage = damage
+        self.export = ['damage']
 
 class Fighter(object):
     '''Entity can fight'''
@@ -16,17 +17,19 @@ class Fighter(object):
         self.team = team
 
         self.alive = True
+        
+        self.export = ['strength', 'hp', 'team', 'alive', 'find_combat_target', 'attack']
 
     def find_combat_target(self):
-        candidates = [e for e in afr.entity.entities if hasattr(e, 'fighter') and e.fighter.alive and e.fighter.team != self.team]
+        candidates = [e for e in afr.entity.entities if e.alive and e.team != self.owner.team]
         try:
-            return min(candidates, key=lambda c: afr.map.map.distance_between(self.owner.corporeal.x, self.owner.corporeal.y, c.corporeal.x, c.corporeal.y))
+            return min(candidates, key=lambda c: afr.map.map.distance_between(self.owner.x, self.owner.y, c.x, c.y))
         except ValueError: # min can't handle empty lists
             return None
 
     def attack(self, defender):
         attacker_str = random.randint(0, self.strength)
-        defender_str = random.randint(0, defender.fighter.strength)
+        defender_str = random.randint(0, defender.strength)
 
         if attacker_str == 0 or defender_str > attacker_str:
             dmg = (defender_str - attacker_str)//2
@@ -34,19 +37,19 @@ class Fighter(object):
             print("%s attacks %s but they block and counterattack for %s damage! (%shp remaining)" % (self.owner.name, defender.name, dmg, self.hp))
         elif defender_str == 0 or attacker_str > defender_str:
             dmg = (attacker_str - defender_str)
-            defender.fighter.hp -= dmg
-            print("%s hits %s for %s damage! (%shp remaining)" % (self.owner.name, defender.name, dmg, defender.fighter.hp))
+            defender.hp -= dmg
+            print("%s hits %s for %s damage! (%shp remaining)" % (self.owner.name, defender.name, dmg, defender.hp))
         else:
             print("Mutual block!")
 
         if self.hp <= 0:
             print("%s died!" % self.owner.name)
             self.alive = False
-            self.owner.corporeal.set_icon(afr.util.load_icon('skull-crossed-bones.png'))
+            self.owner.set_icon(afr.util.load_icon('skull-crossed-bones.png'))
         if defender.fighter.hp <= 0:
             print("%s died!" % defender.name)
-            defender.fighter.alive = False
-            defender.corporeal.set_icon(afr.util.load_icon('skull-crossed-bones.png'))
+            defender.alive = False
+            defender.set_icon(afr.util.load_icon('skull-crossed-bones.png'))
 
 class Corporeal(object):
     '''Entity exists on the map'''
@@ -55,6 +58,8 @@ class Corporeal(object):
         self.y = y
         self.icon = icon
         self.blocks_movement = blocks_movement
+        
+        self.export = ['x', 'y', 'icon', 'blocks_movement', 'set_icon']
         
         self.__original_icon = icon
         
@@ -69,50 +74,56 @@ class AI(object):
     '''Entity has a brain'''
     def __init__(self):
         self.brainstate = {}
+        
+        self.export = ['run_ai']
     
-    def run(self):
+    def run_ai(self):
         '''Stupid generic creature brain'''
         state = self.brainstate
-        if not self.owner.fighter.alive:
+        if not self.owner.alive:
             return
         
         # Find a target
         if 'target' not in state:
-            if hasattr(self.owner, 'inventory'):
-                state['target'] = self.owner.inventory.find_nearby_pickupable()
-            elif hasattr(self.owner, 'fighter'):
-                state['target'] = self.owner.fighter.find_combat_target()
+            if self.owner.has_component('inventory'):
+                state['target'] = self.owner.find_nearby_pickupable()
+            elif self.owner.has_component('fighter'):
+                state['target'] = self.owner.find_combat_target()
             else:
                 logging.debug("Can't find a target for %s" % self.owner.name)
         
         if 'target' in state:
             target = state['target']
-            logging.debug("Using target: %s (%s, %s)" % (target.name, target.corporeal.x, target.corporeal.y))
-            path = afr.map.map.pathfind(self.owner.corporeal.x, self.owner.corporeal.y, target.corporeal.x, target.corporeal.y)
+            logging.debug("Using target: %s (%s, %s)" % (target.name, target.x, target.y))
+            path = afr.map.map.pathfind(self.owner.x, self.owner.y, target.x, target.y)
             print("Path: %s" % ", ".join(["%s, %s" % (t.x, t.y) for t in path]))
             
-            dx = path[1].x - self.owner.corporeal.x
-            dy = path[1].y - self.owner.corporeal.y
+            dx = path[1].x - self.owner.x
+            dy = path[1].y - self.owner.y
             logging.debug("Found path, %s steps. First step is %s, %s" % (len(path), dx, dy))
             
-            self.owner.corporeal.x += dx
-            self.owner.corporeal.y += dy
+            self.owner.x += dx
+            self.owner.y += dy
         else:
             # No target, wander around
             if random.random() > 0.5:
-                (dx, dy) = afr.map.map.pathfind_to(self.owner.corporeal.x, self.owner.corporeal.y, random.randint(0, afr.map.map.width), random.randint(0, afr.map.map.height))
+                (dx, dy) = afr.map.map.pathfind_to(self.owner.x, self.owner.y, random.randint(0, afr.map.map.width), random.randint(0, afr.map.map.height))
                 self.owner.corporeal.x += dx
                 self.owner.corporeal.y += dy
                 
-class Inventory(list):
+class Inventory(object):
     '''Entity has an inventory'''
+    def __init__(self):
+        self.inventory = []
+        self.export = ['inventory', 'pick_up', 'find_nearby_pickupable']
+    
     def pick_up(self, entity):
-        self.append(entity)
+        self.inventory.append(entity)
         entity.remove_component('corporeal')
     
     def find_nearby_pickupable(self):
-        candidates = [e for e in afr.entity.entities if hasattr(e, 'weapon')]
+        candidates = [e for e in afr.entity.entities if e.has_component('weapon')]
         try:
-            return min(candidates, key=lambda c: afr.map.map.distance_between(self.owner.corporeal.x, self.owner.corporeal.y, c.corporeal.x, c.corporeal.y))
+            return min(candidates, key=lambda c: afr.map.map.distance_between(self.owner.x, self.owner.y, c.x, c.y))
         except ValueError: # min can't handle empty lists
             return None        

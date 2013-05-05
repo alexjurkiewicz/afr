@@ -13,9 +13,9 @@ logging.basicConfig(level=logging.DEBUG, format="%(filename)s:%(lineno)d (%(func
 
 def tick():
     for e in afr.entity.entities:
-        if hasattr(e, 'ai'):
+        if hasattr(e, 'run_ai'):
             logging.debug("Running AI for %s" % e.name)
-            e.ai.run()
+            e.run_ai()
 
 def main():
     try:

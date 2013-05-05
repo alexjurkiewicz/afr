@@ -46,5 +46,5 @@ def draw_map(m, screen, startx=0, starty=0, clamp_to_map=True):
                 screen.blit(m.getTile(i, j).tile.icon, (TILE_WIDTH*(i-startx), TILE_HEIGHT*(j-starty)))
 
     for c in afr.entity.entities:
-        if startx <= c.corporeal.x <= endx and starty <= c.corporeal.y <= endy:
-            screen.blit(c.corporeal.icon, ((c.corporeal.x-startx)*TILE_WIDTH, (c.corporeal.y-starty)*TILE_HEIGHT))
+        if startx <= c.x <= endx and starty <= c.y <= endy:
+            screen.blit(c.icon, ((c.x-startx)*TILE_WIDTH, (c.y-starty)*TILE_HEIGHT))
