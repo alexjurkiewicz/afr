@@ -88,18 +88,15 @@ class AI(object):
         if 'target' in state:
             target = state['target']
             logging.debug("Using target: %s (%s, %s)" % (target.name, target.corporeal.x, target.corporeal.y))
-            # Move towards it / attack it
-            dij_map = afr.map.map.create_dijkstra_map([[target.corporeal.x, target.corporeal.y]])
-            #print("Generated dijkstra map: %s" % dij_map)
-            (dx, dy) = afr.map.map.pathfind_using_dijkstra_map(dij_map, self.owner.corporeal.x, self.owner.corporeal.y)
+            path = afr.map.map.pathfind(self.owner.corporeal.x, self.owner.corporeal.y, target.corporeal.x, target.corporeal.y)
+            print("Path: %s" % ", ".join(["%s, %s" % (t.x, t.y) for t in path]))
+            
+            dx = path[1].x - self.owner.corporeal.x
+            dy = path[1].y - self.owner.corporeal.y
+            logging.debug("Found path, %s steps. First step is %s, %s" % (len(path), dx, dy))
+            
             self.owner.corporeal.x += dx
             self.owner.corporeal.y += dy
-            #if afr.map.map.distance_between(self.owner.corporeal.x, self.owner.corporeal.y, target.corporeal.x, target.corporeal.y) <= math.sqrt(2):
-                #self.owner.fighter.attack(target)
-            #else:
-                #(dx, dy) = afr.map.map.pathfind_to(self.owner.corporeal.x, self.owner.corporeal.y, target.corporeal.x, target.corporeal.y)
-                #self.owner.corporeal.x += dx
-                #self.owner.corporeal.y += dy
         else:
             # No target, wander around
             if random.random() > 0.5:

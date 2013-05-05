@@ -11,57 +11,72 @@ TILE_TYPES = { \
         }
 
 class Map(object):
+    '''Represents the game world'''
     def __init__(self, width, height, max_path_length = 9999):
         self.width = width
         self.height = height
         self.max_path_length = min([self.width * self.height, max_path_length])
         self.map = [[MapTile('dirt', x, y) for x in range(width)] for y in range(height)]
         
-        self.graph = {}
         for x, y in itertools.product(range(self.width), range(self.height)):
             node = self.getTile(x, y)
-            self.graph[node] = []
-            
+            #n = 0
             for i, j in ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)):
                 if self.tile_traversable(x+i, y+j):
-                    self.graph[node].append(self.getTile(x+i, y+j))
+                    #n += 1
+                    node.neighbors.append(self.getTile(x+i, y+j))
+            #print("Added %s neighbors for %s, %s" % (n, node.x, node.y))
             
     def getTile(self, x, y):
         return self.map[y][x]
         
     def generate(self):
+        '''Generate a random game map'''
         self.map = [[MapTile('dirt', x, y) if random.random() > 0.2 else MapTile('stone', x, y) for x in range(self.width)] for y in range(self.height)]
-
-    def pathfind_to(self, x1, y1, x2, y2):
-        '''stupid pathfinding until i implement a*'''
-        dx = 1 if x2 > x1 else -1 if x2 < x1 else 0
-        dy = 1 if y2 > y1 else -1 if y2 < y1 else 0
-        # At destination
-        if dy == dx == 0:
-            return (0,0)
-        # Attempt to move directly towards the target
-        elif self.tile_traversable(x1+dx, y1+dy):
-            return (dx, dy)
-        # If the direct path is blocked, try horizontal and vertical only movement in a random order
-        elif self.tile_traversable(x1, y1+dy) and self.tile_traversable(x1+dx, y1):
-            return random.choice([(0, dy), (dx, 0)])
-        # Or just vertically if horizontal approach is blocked...
-        elif self.tile_traversable(x1, y1+dy):
-            return (0, dy)
-        # Or just horizontally if vertical approach is blocked...
-        elif self.tile_traversable(x1+dx, y1):
-            return (dx, 0)
-        # No clear path available -- move in a random direction
-        else:
-            attempt = 0
-            while attempt < 3 and not self.tile_traversable(x1+dx, y1+dy):
-                dx = random.randint(-1,1)
-                dy = random.randint(-1,1)
-                attempt += 1
-            if attempt >= 2:
-                return (0, 0)
-            else:
-                return (dx, dy)
+    
+    def pathfind(self, x1, y1, x2, y2):
+        for x in range(self.width):
+            for y in range(self.height):
+                self.getTile(x, y).parent = None
+        
+        start = self.getTile(x1, y1)
+        end = self.getTile(x2, y2)
+        
+        openset = set()
+        closedset = set()
+        current = start
+        openset.add(current)
+        cycles = 0
+        while openset:
+            cycles += 1
+            current = min(openset, key=lambda t:t.g + t.h)
+            if current == end:
+                path = []
+                while current.parent:
+                    path.append(current)
+                    current = current.parent
+                path.append(current)
+                logging.debug("Found path for %s,%s to %s,%s in %s cycles (%s steps)" % (x1, y1, x2, y2, cycles, len(path)))
+                return path[::-1]
+            openset.remove(current)
+            closedset.add(current)
+            #logging.debug("Working on node %s, %s (%s neighbors)" % (current.x, current.y, len(self.getTile(current.x, current.y).neighbors)))
+            for node in self.getTile(current.x, current.y).neighbors:
+                if node in closedset:
+                    continue
+                if node in openset:
+                    new_g = current.g + current.move_cost(node)
+                    if node.g > new_g:
+                        node.g = new_g
+                        node.parent = current
+                else:
+                    node.g = current.g + current.move_cost(node)
+                    node.h = self.distance_between(node.x, node.y, end.x, end.y)
+                    node.parent = current
+                    openset.add(node)
+        # If we're here, we didn't find a path. Maybe return a partial path in future.
+        logging.warning("Cound't find path!")
+        return None
 
     def distance_between(self, x1,y1,x2,y2):
         '''Estimate distance between points'''
@@ -94,6 +109,7 @@ class MapTile(object):
         self.g = 0
         self.h = 0
         self.parent = None
+        self.neighbors = []
     
     # a star stuff
     def move_cost(self, other):

@@ -9,7 +9,7 @@ import afr.map
 MAP_WIDTH = 10
 MAP_HEIGHT = 10
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG, format="%(filename)s:%(lineno)d (%(funcName)s) %(message)s")
 
 def tick():
     for e in afr.entity.entities:
@@ -17,17 +17,17 @@ def tick():
             logging.debug("Running AI for %s" % e.name)
             e.ai.run()
 
-if __name__ == '__main__':
+def main():
     try:
         # Mapgen
         afr.map.CreateMap(width = MAP_WIDTH, height = MAP_HEIGHT)
-        afr.map.map.generate()
+        #afr.map.map.generate()
         
         # Test creature init
         afr.entity.entities.append( \
             afr.entity.Entity('Urist', components = [
                 afr.entitycomponents.Fighter('dwarf', strength=20, hp=40, team='dwarves'),
-                afr.entitycomponents.Corporeal(x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), icon=afr.util.load_icon('horse-head-yellow.png')),
+                afr.entitycomponents.Corporeal(x=1, y=1, icon=afr.util.load_icon('horse-head-yellow.png')),
                 afr.entitycomponents.AI(),
                 afr.entitycomponents.Inventory(),
                 ]
@@ -40,18 +40,10 @@ if __name__ == '__main__':
                 #afr.entitycomponents.AI(),
                 #]
             #)
-        #)
-        #afr.entity.entities.append( \
-            #afr.entity.Entity('Gobbo2', components = [
-                #afr.entitycomponents.Fighter('goblin', strength=10, hp=40, team='goblins'),
-                #afr.entitycomponents.Corporeal(x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), icon=afr.util.load_icon('imp-laugh-green.png')),
-                #afr.entitycomponents.AI(),
-                #]
-            #)
-        #)        
+        #)      
         afr.entity.entities.append( \
             afr.entity.Entity('Sword', components = [
-                afr.entitycomponents.Corporeal(x=random.randint(0, MAP_WIDTH-1), y=random.randint(0, MAP_HEIGHT-1), icon=afr.util.load_icon('energy-sword.png'), blocks_movement = False),                
+                afr.entitycomponents.Corporeal(x=8, y=8, icon=afr.util.load_icon('energy-sword.png'), blocks_movement = False),                
                 afr.entitycomponents.Weapon(damage=20),
                 ]
             )
@@ -90,3 +82,6 @@ if __name__ == '__main__':
     finally:
         pygame.quit()
     sys.exit()
+
+if __name__ == '__main__':
+    main()
