@@ -51,7 +51,7 @@ def main():
         # PyGame init
         afr.screen.init_screen()
         pygame.key.set_repeat(400, 50)
-
+        
         # Event loop
         n_tick = 0
         run = True

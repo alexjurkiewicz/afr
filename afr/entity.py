@@ -4,8 +4,8 @@ class Entity(object):
     def __init__(self, name, components):
         self.name = name
         self._components = {}
-        for component in components:
-            self.attach_component(component)
+        for c in components:
+            self.attach_component(c)
 
     def attach_component(self, component):
         name = component.__class__.__name__.lower()
