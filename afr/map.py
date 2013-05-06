@@ -40,6 +40,7 @@ class Map(object):
     def pathfind(self, x1, y1, x2, y2):
         '''return array of tiles which are a path between x1,y1 and x2,y2
         returns False if there is no path (care: a path of [] could be returned if you're already at the destination!)'''
+        # thanks to http://scriptogr.am/jdp/post/pathfinding-with-python-graphs-and-a-star
         start = self.getTile(x1, y1)
         end = self.getTile(x2, y2)
         
