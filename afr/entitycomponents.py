@@ -13,6 +13,13 @@ class Weapon(Component):
 
         self.export = ['damage']
 
+    def modify_attribute(self, attrib, cur):
+        logging.debug("Hello: %s, %s, %s" % (attrib, cur, self.damage))
+        if attrib == 'strength':
+            return cur + self.damage
+        else:
+            raise cur
+
 class Fighter(Component):
     '''Entity can fight'''
     def __init__(self, type, strength, hp, team):
@@ -33,8 +40,8 @@ class Fighter(Component):
             return None
 
     def attack(self, defender):
-        attacker_str = random.randint(0, self.strength)
-        defender_str = random.randint(0, defender.strength)
+        attacker_str = random.randint(0, self.owner.get('strength'))
+        defender_str = random.randint(0, defender.get('strength'))
 
         if attacker_str == 0 or defender_str > attacker_str:
             dmg = (defender_str - attacker_str)//2
@@ -152,7 +159,18 @@ class Inventory(Component):
     def __init__(self):
         self.inventory = []
         self.export = ['inventory', 'pick_up', 'find_nearby_pickupable']
-    
+
+    def modify_attribute(self, attrib, cur):
+        logging.debug('Inventory component modifying %s' % attrib)
+        val = cur
+        for item in self.inventory:
+            logging.debug('Inspecting item %s' % item.name)
+            oldval = val
+            val = item.get(attrib, val)
+            if val != oldval:
+                logging.debug('Item %s modified %s (now %s)' % (item.name, attrib, val))
+        return val
+
     def pick_up(self, entity):
         self.inventory.append(entity)
         entity.detach_component('corporeal')
