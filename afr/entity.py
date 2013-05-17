@@ -37,7 +37,7 @@ class Entity(object):
 
     def get(self, attrib, base=None):
         '''Return an attribute, which may be modified by attached components.
-        Specify base to override the default (eg when modifying a parent entity (eg sword with +str modifying the holder's strength)'''
+        Specify base to use a different base value to this entities' (eg when modifying a parent entity (eg sword with +str modifying the holder's strength)'''
         logging.debug("Getting attribute %s for %s" % (attrib, self.name))
         x = base if base else getattr(self, attrib)
         for c in self.components:
