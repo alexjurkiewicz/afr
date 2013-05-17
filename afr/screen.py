@@ -2,8 +2,8 @@ import pygame, logging
 
 import afr.entity, afr.util
 
-RES_X = 1024
-RES_Y = 768
+RES_X = 800
+RES_Y = 600
 TILE_WIDTH = TILE_HEIGHT = 32
 
 # Display init
