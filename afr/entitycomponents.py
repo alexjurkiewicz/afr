@@ -14,7 +14,6 @@ class Weapon(Component):
         self.export = ['damage']
 
     def modify_attribute(self, attrib, cur):
-        logging.debug("Hello: %s, %s, %s" % (attrib, cur, self.damage))
         if attrib == 'strength':
             return cur + self.damage
         else:
@@ -161,14 +160,9 @@ class Inventory(Component):
         self.export = ['inventory', 'pick_up', 'find_nearby_pickupable']
 
     def modify_attribute(self, attrib, cur):
-        logging.debug('Inventory component modifying %s' % attrib)
         val = cur
         for item in self.inventory:
-            logging.debug('Inspecting item %s' % item.name)
-            oldval = val
             val = item.get(attrib, val)
-            if val != oldval:
-                logging.debug('Item %s modified %s (now %s)' % (item.name, attrib, val))
         return val
 
     def pick_up(self, entity):
