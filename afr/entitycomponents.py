@@ -3,12 +3,17 @@ import collections, random, math, logging
 import afr.util
 import afr.map
 
-class Weapon(object):
+class Component(object):
+    def modify_attribute(self, attrib, cur):
+        return cur
+
+class Weapon(Component):
     def __init__(self, damage):
         self.damage = damage
+
         self.export = ['damage']
 
-class Fighter(object):
+class Fighter(Component):
     '''Entity can fight'''
     def __init__(self, type, strength, hp, team):
         self.type = type
@@ -53,7 +58,7 @@ class Fighter(object):
             defender.alive = False
             defender.set_icon(afr.util.load_icon('skull-crossed-bones.png'))
 
-class Corporeal(object):
+class Corporeal(Component):
     '''Entity exists on the map'''
     def __init__(self, x, y, icon, blocks_movement = True, zorder = 0):
         self.x = x
@@ -65,7 +70,7 @@ class Corporeal(object):
         self.export = ['x', 'y', 'get_icon', 'blocks_movement', 'set_icon', 'zorder']
         
         self.__original_icon = icon
-        
+
     def get_icon(self):
         return self.icon
         
@@ -76,13 +81,13 @@ class Corporeal(object):
         else:
             self.icon == self.__original_icon
 
-class AI(object):
+class AI(Component):
     '''Entity has a brain'''
     def __init__(self):
         self.brainstate = {}
         
         self.export = ['run_ai']
-    
+
     def run_ai(self):
         '''Stupid generic creature brain'''
         state = self.brainstate
@@ -142,8 +147,8 @@ class AI(object):
                     me.x += dx
                     me.y += dy
                 
-class Inventory(object):
-    '''Entity has an inventory'''
+class Inventory(Component):
+    '''Entity has an inventory and slots to equip items in'''
     def __init__(self):
         self.inventory = []
         self.export = ['inventory', 'pick_up', 'find_nearby_pickupable']
