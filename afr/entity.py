@@ -33,7 +33,21 @@ class Entity(object):
                 delattr(self, obj)
                 
     def has_component(self, component):
-        return component in self._components
+        return component in self.components
+
+    def get(self, attrib, base=None):
+        '''Return an attribute, which may be modified by attached components.
+        Specify base to override the default (eg when modifying a parent entity (eg sword with +str modifying the holder's strength)'''
+        logging.debug("Getting attribute %s for %s" % (attrib, self.name))
+        x = base if base else getattr(self, attrib)
+        for c in self.components:
+            logging.debug('Checking if component %s modifies %s' % (c, attrib))
+            component = self.components[c]
+            oldx = x
+            x = component.modify_attribute(attrib, x)
+            if x != oldx:
+                logging.debug("Component %s modified attribute (new: %s)" % (c, x))
+        return x
 
 global entities
 entities = []
