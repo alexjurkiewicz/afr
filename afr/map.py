@@ -137,8 +137,9 @@ class Map(object):
             closedset.add(current)
             #logging.debug("Working on node %s, %s (%s neighbors)" % (current.x, current.y, len(self.getTile(current.x, current.y).neighbors)))
             for node in self.getTile(current.x, current.y).neighbors:
-                #if not self.tile_traversable(node.x, node.y):
-                    #closedset.add(node)
+                if not self.tile_traversable(node.x, node.y):
+                    if node.x != x2 or node.y != y2:
+                        closedset.add(node)
                 if node in closedset:
                     continue
                 if node in openset:
