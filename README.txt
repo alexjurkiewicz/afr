@@ -1,7 +1,7 @@
 REQUIREMENTS
 ************
 
-* Python 3(?)
+* Python 2/3
 * PyGame
 
 
