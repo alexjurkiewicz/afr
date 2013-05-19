@@ -21,11 +21,12 @@ class Entity(object):
             logging.debug("Attaching %s to %s" % (name, self.name))
             component.owner = self
             self.components[name] = component
-            for obj in component.export:
-                if hasattr(self, obj):
-                    raise AttributeError("Component exports %s which is already in use on entity %s." % (obj, self.name))
-                logging.debug("Setting attribute %s" % obj)
-                setattr(self, obj, getattr(component, obj))
+            if hasattr(component, 'export'):
+                for obj in component.export:
+                    if hasattr(self, obj):
+                        raise AttributeError("Component exports %s which is already in use on entity %s." % (obj, self.name))
+                    logging.debug("Setting attribute %s" % obj)
+                    setattr(self, obj, getattr(component, obj))
     
     def detach_component(self, name):
         '''Detach EntityComponent by name'''
@@ -35,8 +36,9 @@ class Entity(object):
             logging.debug("Detaching %s from %s" % (name, self.name))
             component = self.components[name]
             del(self.components[name])
-            for obj in component.export:
-                delattr(self, obj)
+            if hasattr(component, 'export'):
+                for obj in component.export:
+                    delattr(self, obj)
                 
     def has_component(self, component):
         return component in self.components
