@@ -137,6 +137,8 @@ class Map(object):
             closedset.add(current)
             #logging.debug("Working on node %s, %s (%s neighbors)" % (current.x, current.y, len(self.getTile(current.x, current.y).neighbors)))
             for node in self.getTile(current.x, current.y).neighbors:
+                #if not self.tile_traversable(node.x, node.y):
+                    #closedset.add(node)
                 if node in closedset:
                     continue
                 if node in openset:
@@ -162,8 +164,7 @@ class Map(object):
         '''Is given tile traversable'''
         return 0 <= x < self.width and 0 <= y < self.height and \
                self.getTile(x, y).tile.passable and \
-               True
-               #not any([ e.corporeal.blocks_movement and e.corporeal.x == x and e.corporeal.y == y for e in afr.entity.entities if hasattr(e, 'corporeal')])
+               not any([ e.blocks_movement and e.x == x and e.y == y for e in afr.entity.entities if e.has_component('corporeal')])
     
     def neighboring_tile_coords(self, x, y, traversable_only = False):
         '''Return array of neighboring coordinates'''
