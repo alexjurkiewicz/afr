@@ -30,8 +30,7 @@ class Weapon(EntityComponent):
 
 class Fighter(EntityComponent):
     '''Entity can fight'''
-    def __init__(self, type, strength, hp, team):
-        self.type = type
+    def __init__(self, strength, hp, team):
         self.strength = strength
         self.hp = hp
         self.team = team
