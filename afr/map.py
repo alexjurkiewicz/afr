@@ -30,12 +30,84 @@ class Map(object):
             #print("Added %s neighbors for %s, %s" % (n, node.x, node.y))
             
     def getTile(self, x, y):
-        return self.map[y][x]
+        try:
+            return self.map[y][x]
+        except IndexError:
+            raise IndexError("Coordinates outside map")
+
+    def setTile(self, x, y, tile):
+        '''You may also want to regenerate pathfinding neighbors'''
+        try:
+            self.map[y][x] = tile
+        except IndexError:
+            raise IndexError("Coordinates outside map")
         
     def generate(self):
         '''Generate a random game map'''
         self.map = [[MapTile('dirt', x, y) if random.random() > 0.2 else MapTile('stone', x, y) for x in range(self.width)] for y in range(self.height)]
         self.updateTileNeighbors()
+
+    def generate_interior(self, rooms=2):
+        # Generate an all-wall map
+        self.map = [[MapTile('stone', x, y) for x in range(self.width)] for y in range(self.height)]
+
+        # Add boundary
+        for x in range(self.width):
+            for y in range(self.height):
+                if x in (0, self.width-1) or y in (0, self.height-1):
+                    self.setTile(x, y, MapTile('boundary', x, y))
+
+        # Carve out rooms
+        room_coords = []
+        for room in range(rooms):
+            width = random.randint(2,6)
+            height = random.randint(2,6)
+            startx = random.randint(0, self.width - width//2)
+            starty = random.randint(0, self.height - height//2)
+            endx = min(startx+width, self.width-1)
+            endy = min(starty+height, self.height-1)
+            room_coords.append((startx, starty, endx, endy))
+            logging.debug("Building room at %s,%s - %s,%s" % (startx, starty, endx, endy))
+            for x in range(startx, endx):
+                for y in range(starty, endy):
+                    self.setTile(x, y, MapTile('dirt', x, y))
+
+        # Randomly run 1.33*num_rooms tunnels
+        for i in range(min(2, int(rooms * (4/3.0)))):
+            start_room = random.choice(room_coords)
+            dest_room = random.choice(room_coords)
+            if start_room != dest_room:
+                cursorx = random.randint(start_room[0], start_room[2])
+                cursory = random.randint(start_room[1], start_room[3])
+                destx = random.randint(dest_room[0], dest_room[2])
+                desty = random.randint(dest_room[1], dest_room[3])
+                self.carve_tunnel(cursorx, cursory, destx, desty)
+
+        # Update pathing
+        self.updateTileNeighbors()
+
+    def carve_tunnel(self, x1, y1, x2, y2):
+        logging.debug("Carving tunnel between %s,%s and %s,%s" % (x1, y1, x2, y2))
+        #map.py:70 (generate_interior) Building room at 1,3 - 6,6
+        #map.py:70 (generate_interior) Building room at 9,7 - 13,9
+        cursorx = x1
+        cursory = y1
+        while cursorx != x2:
+            logging.debug("Clearing space at %s,%s" % (cursorx, cursory))
+            self.setTile(cursorx, cursory, MapTile('dirt', cursorx, cursory))
+            cursorx += 1 if x2 > cursorx else -1
+        while cursory != y2:
+            logging.debug("Clearing space at %s,%s" % (cursorx, cursory))
+            self.setTile(cursorx, cursory, MapTile('dirt', cursorx, cursory))
+            cursory += 1 if y2 > cursory else -1
+
+    def get_empty_coordinates(self):
+        x = random.randint(0, self.width-1)
+        y = random.randint(0, self.height-1)
+        while not self.tile_traversable(x, y):
+            x = random.randint(0, self.width-1)
+            y = random.randint(0, self.height-1)
+        return (x, y)
     
     def pathfind(self, x1, y1, x2, y2):
         '''return array of tiles which are a path between x1,y1 and x2,y2
@@ -112,6 +184,10 @@ class MapTile(object):
         self.g = 0
         self.h = 0
         self.neighbors = []
+
+    def setType(self, type):
+        self.type = type
+        self.tile = TILE_TYPES[self.type]
     
     # a star stuff
     def move_cost(self, other):

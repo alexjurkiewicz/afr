@@ -6,8 +6,8 @@ import afr.entity
 import afr.entitycomponents
 import afr.map
 
-MAP_WIDTH = 30
-MAP_HEIGHT = 30
+MAP_WIDTH = 25
+MAP_HEIGHT = 25
 
 logging.basicConfig(level=logging.DEBUG, format="%(filename)s:%(lineno)d (%(funcName)s) %(message)s")
 
@@ -21,14 +21,15 @@ def main():
     try:
         # Mapgen
         afr.map.CreateMap(width = MAP_WIDTH, height = MAP_HEIGHT)
-        afr.map.map.generate()
+        afr.map.map.generate_interior()
         
         # Test creature init
+        coords = [afr.map.map.get_empty_coordinates(), afr.map.map.get_empty_coordinates(), afr.map.map.get_empty_coordinates()]
         afr.entity.entities.append( \
             afr.entity.Entity('Urist', components = [
                 afr.entitycomponents.Creature(max_hp=40),
                 afr.entitycomponents.Fighter(strength=5, team='dwarves'),
-                afr.entitycomponents.Corporeal(x=1, y=1, icon=afr.util.load_icon('horse-head-yellow.png'), zorder = 1),
+                afr.entitycomponents.Corporeal(x=coords[0][0], y=coords[0][1], icon=afr.util.load_icon('horse-head-yellow.png'), zorder = 1),
                 afr.entitycomponents.AI(),
                 afr.entitycomponents.Inventory(),
                 ]
@@ -38,14 +39,14 @@ def main():
             afr.entity.Entity('Goblin King', components = [
                 afr.entitycomponents.Creature(max_hp=40),
                 afr.entitycomponents.Fighter(strength=10, team='goblins'),
-                afr.entitycomponents.Corporeal(x=15, y=15, icon=afr.util.load_icon('imp-laugh-green.png')),
+                afr.entitycomponents.Corporeal(x=coords[1][0], y=coords[1][1], icon=afr.util.load_icon('imp-laugh-green.png')),
                 afr.entitycomponents.AI(),
                 ]
             )
         )
         afr.entity.entities.append( \
             afr.entity.Entity('Sword', components = [
-                afr.entitycomponents.Corporeal(x=5, y=5 , icon=afr.util.load_icon('energy-sword.png'), blocks_movement = False, zorder = -1),                
+                afr.entitycomponents.Corporeal(x=coords[2][0], y=coords[2][1], icon=afr.util.load_icon('energy-sword.png'), blocks_movement = False, zorder = -1),
                 afr.entitycomponents.Weapon(strength=10),
                 ]
             )

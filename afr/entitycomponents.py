@@ -153,11 +153,14 @@ class AI(EntityComponent):
                 action = state['target_action']
                 getattr(me, action)(target) # call the function specified in target_action on ourselves, with the target as the only argument
             else:
-                dx = path[0].x - self.owner.x
-                dy = path[0].y - self.owner.y
-                logging.debug("Found path, %s steps. First step is %s, %s" % (len(path), dx, dy))
-                self.owner.x += dx
-                self.owner.y += dy
+                if len(path) > 0:
+                    dx = path[0].x - self.owner.x
+                    dy = path[0].y - self.owner.y
+                    logging.debug("Found path, %s steps. First step is %s, %s" % (len(path), dx, dy))
+                    self.owner.x += dx
+                    self.owner.y += dy
+                else:
+                    logging.debug("Pathfinding says we're there already!!")
         else:
             # No target, wander around
             if random.random() > 0.5:
