@@ -1,6 +1,11 @@
 import logging
 
 class Entity(object):
+    '''
+    Represents an ingame object (creature, item, aura, etc).
+
+    Entitys are given functionality through EntityComponents which can be attached/detached at instantiation & runtime.
+    '''
     def __init__(self, name, components):
         self.name = name
         self.components = {}
@@ -8,6 +13,7 @@ class Entity(object):
             self.attach_component(c)
 
     def attach_component(self, component):
+        '''Attach provided EntityComponent'''
         name = component.__class__.__name__.lower()
         if name in self.components:
             raise ValueError("Component by the name %s is already attached to entity %s." % (name, self.name))
@@ -22,7 +28,7 @@ class Entity(object):
                 setattr(self, obj, getattr(component, obj))
     
     def detach_component(self, name):
-        '''Detach component by name'''
+        '''Detach EntityComponent by name'''
         if name not in self.components.keys():
             raise ValueError("Entity %s has no attached component named %s." % (self.name, name))
         else:
@@ -37,7 +43,7 @@ class Entity(object):
 
     def get(self, attrib, base=None):
         '''Return an attribute, which may be modified by attached components.
-        Specify base to use a different base value to this entities' (eg when modifying a parent entity (eg sword with +str modifying the holder's strength)'''
+        Specify base to use a different base value than this entities' (eg when modifying a parent entity (eg sword with +str modifying the holder's strength))'''
         logging.debug("Getting attribute %s for %s" % (attrib, self.name))
         x = base if base else getattr(self, attrib)
         for c in self.components:
