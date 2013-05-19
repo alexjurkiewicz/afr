@@ -21,7 +21,7 @@ def main():
     try:
         # Mapgen
         afr.map.CreateMap(width = MAP_WIDTH, height = MAP_HEIGHT)
-        afr.map.map.generate_interior()
+        afr.map.map.generate_interior(rooms=5)
         
         # Test creature init
         coords = [afr.map.map.get_empty_coordinates(), afr.map.map.get_empty_coordinates(), afr.map.map.get_empty_coordinates()]
