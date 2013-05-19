@@ -46,17 +46,16 @@ class Entity(object):
     def get(self, attrib, base=None):
         '''Return an attribute, which may be modified by attached components.
         Specify base to use a different base value than this entities' (eg when modifying a parent entity (eg sword with +str modifying the holder's strength))'''
-        logging.debug("Getting attribute %s for %s" % (attrib, self.name))
-        x = base if base else getattr(self, attrib)
+        val = base if base else getattr(self, attrib)
+        logging.debug("Getting attribute %s for %s (initial: %s)" % (attrib, self.name, val))
         for c in self.components:
             #logging.debug('Checking if component %s modifies %s' % (c, attrib))
             component = self.components[c]
-            oldx = x
-            x = component.modify_attribute(attrib, x)
-            if x != oldx:
-                logging.debug("Component %s modified attribute (new: %s)" % (c, x))
-        logging.debug("Returning %s as %s" % (attrib, x))
-        return x
+            oldval = val
+            val = component.modify_attribute(attrib, val)
+            if val != oldval:
+                logging.debug("Component %s modified attribute (new: %s)" % (c, val))
+        return val
 
 global entities
 entities = []
