@@ -3,11 +3,12 @@ import collections, random, math, logging
 import afr.util
 import afr.map
 
-class Component(object):
+class EntityComponent(object):
+    '''Functionality for Entity objects is implemented in a modular fashion as EntityComponent objects, which can be loaded/unloaded  at runtime into Entity objects.'''
     def modify_attribute(self, attrib, cur):
         return cur
 
-class Weapon(Component):
+class Weapon(EntityComponent):
     def __init__(self, damage):
         self.damage = damage
 
@@ -19,7 +20,7 @@ class Weapon(Component):
         else:
             raise cur
 
-class Fighter(Component):
+class Fighter(EntityComponent):
     '''Entity can fight'''
     def __init__(self, type, strength, hp, team):
         self.type = type
@@ -64,7 +65,7 @@ class Fighter(Component):
             defender.alive = False
             defender.set_icon(afr.util.load_icon('skull-crossed-bones.png'))
 
-class Corporeal(Component):
+class Corporeal(EntityComponent):
     '''Entity exists on the map'''
     def __init__(self, x, y, icon, blocks_movement = True, zorder = 0):
         self.x = x
@@ -87,7 +88,7 @@ class Corporeal(Component):
         else:
             self.icon == self.__original_icon
 
-class AI(Component):
+class AI(EntityComponent):
     '''Entity has a brain'''
     def __init__(self):
         self.brainstate = {}
@@ -153,7 +154,7 @@ class AI(Component):
                     me.x += dx
                     me.y += dy
                 
-class Inventory(Component):
+class Inventory(EntityComponent):
     '''Entity has an inventory and slots to equip items in'''
     def __init__(self):
         self.inventory = []
