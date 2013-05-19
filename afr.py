@@ -26,7 +26,8 @@ def main():
         # Test creature init
         afr.entity.entities.append( \
             afr.entity.Entity('Urist', components = [
-                afr.entitycomponents.Fighter(strength=20, hp=40, team='dwarves'),
+                afr.entitycomponents.Creature(max_hp=40),
+                afr.entitycomponents.Fighter(strength=20, team='dwarves'),
                 afr.entitycomponents.Corporeal(x=1, y=1, icon=afr.util.load_icon('horse-head-yellow.png'), zorder = 1),
                 afr.entitycomponents.AI(),
                 afr.entitycomponents.Inventory(),
@@ -35,7 +36,8 @@ def main():
         )
         afr.entity.entities.append( \
             afr.entity.Entity('Gobbo1', components = [
-                afr.entitycomponents.Fighter(strength=10, hp=40, team='goblins'),
+                afr.entitycomponents.Creature(max_hp=40),
+                afr.entitycomponents.Fighter(strength=10, team='goblins'),
                 afr.entitycomponents.Corporeal(x=15, y=15, icon=afr.util.load_icon('imp-laugh-green.png')),
                 afr.entitycomponents.AI(),
                 ]
