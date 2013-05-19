@@ -17,16 +17,16 @@ class EntityComponent(object):
 
 class Weapon(EntityComponent):
     '''Entity is a weapon.'''
-    def __init__(self, damage):
-        self.damage = damage
-
-        self.export = ['damage']
+    def __init__(self, **bonus_attribs):
+        '''Weapons provide bonus attributes specified as a key/val dict'''
+        for key in bonus_attribs:
+            setattr(self, key, bonus_attribs[key])
 
     def modify_attribute(self, attrib, cur):
-        if attrib == 'strength':
-            return cur + self.damage
+        if hasattr(self, attrib):
+            return cur + getattr(self, attrib)
         else:
-            raise cur
+            return cur
 
 class Fighter(EntityComponent):
     '''Entity can fight'''
