@@ -27,7 +27,7 @@ def main():
         afr.entity.entities.append( \
             afr.entity.Entity('Urist', components = [
                 afr.entitycomponents.Creature(max_hp=40),
-                afr.entitycomponents.Fighter(strength=20, team='dwarves'),
+                afr.entitycomponents.Fighter(strength=5, team='dwarves'),
                 afr.entitycomponents.Corporeal(x=1, y=1, icon=afr.util.load_icon('horse-head-yellow.png'), zorder = 1),
                 afr.entitycomponents.AI(),
                 afr.entitycomponents.Inventory(),
@@ -35,7 +35,7 @@ def main():
             )
         )
         afr.entity.entities.append( \
-            afr.entity.Entity('Gobbo1', components = [
+            afr.entity.Entity('Goblin King', components = [
                 afr.entitycomponents.Creature(max_hp=40),
                 afr.entitycomponents.Fighter(strength=10, team='goblins'),
                 afr.entitycomponents.Corporeal(x=15, y=15, icon=afr.util.load_icon('imp-laugh-green.png')),
@@ -46,7 +46,7 @@ def main():
         afr.entity.entities.append( \
             afr.entity.Entity('Sword', components = [
                 afr.entitycomponents.Corporeal(x=5, y=5 , icon=afr.util.load_icon('energy-sword.png'), blocks_movement = False, zorder = -1),                
-                afr.entitycomponents.Weapon(damage=20),
+                afr.entitycomponents.Weapon(strength=10),
                 ]
             )
         )
