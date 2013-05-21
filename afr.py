@@ -1,6 +1,7 @@
 import random, sys, pygame, os, time, collections, math, logging
 
 import afr.screen
+afr.screen.init_screen() # Other modules depend on pygame's display being initialised
 import afr.util
 import afr.entity
 import afr.entitycomponents

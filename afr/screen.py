@@ -5,18 +5,14 @@ import afr.entity, afr.util
 RES_X = 800
 RES_Y = 600
 TILE_WIDTH = TILE_HEIGHT = 32
-
-# Display init
-pygame.init()
-screen = pygame.display.set_mode((RES_X, RES_Y))
 CAMERA_TILES_X = RES_X // TILE_WIDTH
 CAMERA_TILES_Y = RES_Y // TILE_HEIGHT
 
-global screen
 global last_x, last_y
 last_x, last_y = (0, 0)
 
 def init_screen():
+    pygame.init()
     global screen
     screen = pygame.display.set_mode((RES_X, RES_Y))
     screen.fill((0,0,0))
