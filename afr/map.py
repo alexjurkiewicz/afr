@@ -62,10 +62,11 @@ class Map(object):
         for room in range(rooms):
             width = random.randint(2,6)
             height = random.randint(2,6)
-            startx = random.randint(0, self.width - width//2)
-            starty = random.randint(0, self.height - height//2)
-            endx = min(startx+width, self.width-1)
-            endy = min(starty+height, self.height-1)
+            # Don't let rooms overrun the map boundary
+            startx = random.randint(0, self.width - 1 - width)
+            starty = random.randint(0, self.height - 1 - height)
+            endx = startx + width
+            endy = starty + height
             room_coords.append((startx, starty, endx, endy))
             logging.debug("Building room at %s,%s - %s,%s" % (startx, starty, endx, endy))
             for x in range(startx, endx):
