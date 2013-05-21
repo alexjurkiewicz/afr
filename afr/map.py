@@ -72,10 +72,10 @@ class Map(object):
                 for y in range(starty, endy):
                     self.setTile(x, y, MapTile('dirt', x, y))
 
-        # Randomly run 1.33*num_rooms tunnels
-        for i in range(min(2, int(rooms * (4/3.0)))):
-            start_room = random.choice(room_coords)
-            dest_room = random.choice(room_coords)
+        # Carve a tunnel between each combination of rooms
+        for roompair in itertools.combinations(room_coords, 2):
+            start_room = roompair[0]
+            dest_room = roompair[1]
             if start_room != dest_room:
                 cursorx = random.randint(start_room[0], start_room[2])
                 cursory = random.randint(start_room[1], start_room[3])
