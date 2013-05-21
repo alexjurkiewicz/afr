@@ -1,10 +1,19 @@
 import random, sys, pygame, os, time, collections, math, logging
 
 import afr.screen
+afr.screen.init_screen() # Need to init pygame to allow resource loading
+
 import afr.util
 import afr.entity
-import afr.entitycomponents
 import afr.map
+
+import afr.entitycomponents
+import afr.entitycomponents.ai
+import afr.entitycomponents.corporeal
+import afr.entitycomponents.creature
+import afr.entitycomponents.fighter
+import afr.entitycomponents.inventory
+import afr.entitycomponents.weapon
 
 MAP_WIDTH = 25
 MAP_HEIGHT = 25
@@ -52,7 +61,6 @@ def main():
             )
         )
         # PyGame init
-        afr.screen.init_screen()
         pygame.key.set_repeat(400, 50)
         
         # Event loop
