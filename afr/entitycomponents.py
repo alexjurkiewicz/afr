@@ -163,11 +163,12 @@ class AI(EntityComponent):
                     logging.debug("Pathfinding says we're there already!!")
         else:
             # No target, wander around
-            if random.random() > 0.5:
-                (dx, dy) = (random.randint(-1, 1), random.randint(-1, 1))
-                if afr.map.map.tile_traversable(me.x + dx, me.y + dy):
-                    me.x += dx
-                    me.y += dy
+            if random.random() > 0.3:
+                possible_directions = [i for i in ([-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]) if afr.map.map.tile_traversable(me.x + i[0], me.y + i[1])]
+                print("possible directions: ", possible_directions)
+                movement = random.choice(possible_directions)
+                me.x += movement[0]
+                me.y += movement[1]
                 
 class Inventory(EntityComponent):
     '''Entity has an inventory'''
