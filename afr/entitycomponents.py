@@ -71,10 +71,12 @@ class Fighter(EntityComponent):
         if self.owner.current_hp <= 0:
             print("%s died!" % self.owner.name)
             self.alive = False
+            self.blocks_movement = False
             self.owner.set_icon(afr.util.load_icon('skull-crossed-bones.bmp'))
         if defender.current_hp <= 0:
             print("%s died!" % defender.name)
             defender.alive = False
+            defender.blocks_movement = False
             defender.set_icon(afr.util.load_icon('skull-crossed-bones.bmp'))
 
 class Corporeal(EntityComponent):
