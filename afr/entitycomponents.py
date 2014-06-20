@@ -71,11 +71,11 @@ class Fighter(EntityComponent):
         if self.owner.current_hp <= 0:
             print("%s died!" % self.owner.name)
             self.alive = False
-            self.owner.set_icon(afr.util.load_icon('skull-crossed-bones.png'))
+            self.owner.set_icon(afr.util.load_icon('skull-crossed-bones.bmp'))
         if defender.current_hp <= 0:
             print("%s died!" % defender.name)
             defender.alive = False
-            defender.set_icon(afr.util.load_icon('skull-crossed-bones.png'))
+            defender.set_icon(afr.util.load_icon('skull-crossed-bones.bmp'))
 
 class Corporeal(EntityComponent):
     '''Entity exists on the map'''

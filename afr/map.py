@@ -4,10 +4,10 @@ import afr.util
 
 TileType = collections.namedtuple('TileType', ['passable', 'icon'])
 TILE_TYPES = { \
-        'dirt': TileType(passable = True, icon = afr.util.load_icon('black32.png')),
-        'floor': TileType(passable = True, icon = afr.util.load_icon('black32.png')),
-        'stone': TileType(passable = False, icon = afr.util.load_icon('stone-tower-grey.png')),
-        'boundary': TileType(passable = False, icon = afr.util.load_icon('mountaintop.png')),
+        'dirt': TileType(passable = True, icon = afr.util.load_icon('black32.bmp')),
+        'floor': TileType(passable = True, icon = afr.util.load_icon('black32.bmp')),
+        'stone': TileType(passable = False, icon = afr.util.load_icon('stone-tower-grey.bmp')),
+        'boundary': TileType(passable = False, icon = afr.util.load_icon('mountaintop.bmp')),
         }
 
 class Map(object):
