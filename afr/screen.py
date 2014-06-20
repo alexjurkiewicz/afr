@@ -22,31 +22,12 @@ def draw_map(m, screen, focus=None, clamp_to_map=True):
     '''Draw the map starting from x,y'''
     screen.fill((0,0,0))
     
-    # If we have a focus, ensure it's within the middle half of the screen
+    # If we have a focus, ensure it's in the midle of the screen
     if focus:
-        quarter_x = CAMERA_TILES_X // 4
         half_x = CAMERA_TILES_X // 2
-        quarter_y = CAMERA_TILES_Y // 4
         half_y = CAMERA_TILES_Y // 2
-        #print("Last view was %s,%s" % (last_x, last_y))
-        #print("Focus is at %s,%s" % (focus.x, focus.y))
-        if last_x + quarter_x <= focus.x <= last_x + half_x + quarter_x:
-            startx = last_x
-        else:
-            #print("Out of X focus")
-            min_start = focus.x - half_x - quarter_x
-            max_start = focus.x + half_x + quarter_x
-            #print("Clamping X to %s -- %s" % (min_start, max_start))
-            startx = afr.util.clamp(last_x, min_start, max_start)
-        
-        if last_y + quarter_y <= focus.y <= last_y + half_y + quarter_y:
-            starty = last_y
-        else:
-            #print("Out of Y focus")
-            min_start = focus.y - half_y - quarter_y
-            max_start = focus.y + half_y + quarter_y
-            #print("Clamping Y to %s -- %s" % (min_start, max_start))
-            starty = afr.util.clamp(last_y, min_start, max_start)
+        startx = focus.x - half_x
+        starty = focus.y - half_y
     
     global last_x, last_y
     last_x = startx
