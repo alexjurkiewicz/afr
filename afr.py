@@ -8,9 +8,8 @@ import afr.entity
 import afr.entitycomponents
 import afr.map
 
-MAP_WIDTH = 25
-MAP_HEIGHT = 25
-
+MAP_WIDTH = 40
+MAP_HEIGHT = 40
 
 def tick():
     for e in afr.entity.entities:
