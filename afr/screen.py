@@ -16,6 +16,7 @@ def init_screen():
     global screen
     screen = pygame.display.set_mode((RES_X, RES_Y))
     screen.fill((0,0,0))
+    logging.info("Camera shows %s tiles across and %s down" % (CAMERA_TILES_X, CAMERA_TILES_Y))
 
 def draw_map(m, screen, focus=None, clamp_to_map=True):
     '''Draw the map starting from x,y'''
