@@ -1,4 +1,5 @@
 import random, sys, pygame, os, time, collections, math, logging
+logging.basicConfig(level=logging.DEBUG, format="%(filename)s (%(funcName)s) %(message)s")
 
 import afr.screen
 afr.screen.init_screen() # Other modules depend on pygame's display being initialised
@@ -10,7 +11,6 @@ import afr.map
 MAP_WIDTH = 25
 MAP_HEIGHT = 25
 
-logging.basicConfig(level=logging.DEBUG, format="%(filename)s:%(lineno)d (%(funcName)s) %(message)s")
 
 def tick():
     for e in afr.entity.entities:
