@@ -2,12 +2,15 @@
 
 """AFR main program."""
 
+from __future__ import print_function
+
 import logging
 import sys
 
 import afr.entity
 import afr.entitycomponents
 import afr.map
+import afr.player
 import afr.screen
 import afr.util
 
@@ -23,44 +26,10 @@ def _tick(action):
     """Run game turn."""
     for e in afr.entity.entities:
         if e.has_component('player'):
-            _player_action(action, e)
+            afr.player.handle_player_action(action, e)
         if e.has_component('ai') and not e.has_component('player'):
             logging.debug("Running AI for %s" % e.name)
             e.run_ai()
-
-
-def _player_action(action, entity):
-    """Resolve player action."""
-    if action == 'move-left':
-        func = entity.move
-        args = {'dx': -1, 'dy': 0}
-    elif action == 'move-right':
-        func = entity.move
-        args = {'dx': 1, 'dy': 0}
-    elif action == 'move-down':
-        func = entity.move
-        args = {'dx': 0, 'dy': 1}
-    elif action == 'move-up':
-        func = entity.move
-        args = {'dx': 0, 'dy': -1}
-    elif action == 'move-left-up':
-        func = entity.move
-        args = {'dx': -1, 'dy': -1}
-    elif action == 'move-left-down':
-        func = entity.move
-        args = {'dx': -1, 'dy': 1}
-    elif action == 'move-right-up':
-        func = entity.move
-        args = {'dx': 1, 'dy': -1}
-    elif action == 'move-right-down':
-        func = entity.move
-        args = {'dx': 1, 'dy': 1}
-    else:
-        logging.warning("Unknown player action %s!", action)
-    try:
-        func(**args)
-    except afr.entitycomponents.ComponentError as e:
-        logging.warning("Action failed: %s", e)
 
 
 def main():
@@ -131,37 +100,15 @@ def main():
             n_tick += 1
             logging.debug("Tick: %s" % n_tick)
             afr.screen.draw_map(afr.map.map, focus=afr.entity.entities[0])
-            key = None
-            while key not in ALLOWED_KEYS:
-                if key:
-                    print "Unknown command '%s'" % key
+            action = None
+            while not action:
                 try:
                     key = raw_input('>_ ')
                 except KeyboardInterrupt:
-                    run = False
-                    break
-            if key == 'q':
-                run = False
-            elif key == 'h':
-                action = 'move-left'
-            elif key == 'j':
-                action = 'move-down'
-            elif key == 'k':
-                action = 'move-up'
-            elif key == 'l':
-                action = 'move-right'
-            elif key == 'y':
-                action = 'move-left-up'
-            elif key == 'u':
-                action = 'move-right-up'
-            elif key == 'b':
-                action = 'move-left-down'
-            elif key == 'n':
-                action = 'move-right-down'
-            if run:
-                _tick(action=action)
-        else:
-            print ""
+                    print()
+                    sys.exit(0)
+                action = afr.player.key_to_action(key)
+            _tick(action=action)
 
     except Exception:
         raise
