@@ -19,8 +19,8 @@ class EntityComponent(object):
     """
 
     def __init__(self):
-        """The constructor must be implemented."""
-        raise NotImplementedError("EntityComponent-derived objects  must override __init__")
+        """The default constructor does nothing."""
+        pass
 
     def modify_attribute(self, attrib, cur):
         """A default no-op for attribute modification."""
@@ -167,7 +167,12 @@ class Corporeal(EntityComponent):
         self.zorder = zorder
         self.icon = icon
 
-        self.export = ['x', 'y', 'icon', 'blocks_movement', 'zorder']
+        self.export = ['x', 'y', 'icon', 'blocks_movement', 'zorder', 'move']
+
+    def move(self, dx, dy):
+        print "id:", id(self.x), id(self.owner.x)
+        self.owner.x += dx
+        self.owner.y += dy
 
 
 class AI(EntityComponent):
@@ -190,8 +195,10 @@ class AI(EntityComponent):
                 not state['target'].alive:
             # Stop attacking after a target dies
             del(state['target'])
-        if state['target']:
+        if 'target' in state and state['target']:
             return True
+        else:
+            return False
 
     def _acquire_target(self):
         state = self.brainstate
@@ -200,17 +207,19 @@ class AI(EntityComponent):
             return
         if 'target' not in state:
             logging.debug("Finding target for %s" % me.name)
-            pickupable = me.find_nearby_pickupable()
-            if me.has_component('inventory') and pickupable:
-                state['target'] = pickupable
-                state['target_distance'] = 0
-                state['target_action'] = 'pick_up'
+            if me.has_component('inventory'):
+                pickupable = me.find_nearby_pickupable()
+                if pickupable:
+                    state['target'] = pickupable
+                    state['target_distance'] = 0
+                    state['target_action'] = 'pick_up'
         if 'target' not in state:
-            enemy = me.find_combat_target()
-            if me.has_component('fighter') and enemy:
-                state['target'] = enemy
-                state['target_distance'] = 1
-                state['target_action'] = 'attack'
+            if me.has_component('fighter'):
+                enemy = me.find_combat_target()
+                if enemy:
+                    state['target'] = enemy
+                    state['target_distance'] = 1
+                    state['target_action'] = 'attack'
         if 'target' not in state:
             logging.debug("Can't find a target for %s" % me.name)
 
@@ -221,8 +230,8 @@ class AI(EntityComponent):
         logging.debug("Using target: %s (%s, %s)",
                       target.name, target.x, target.y)
 
-        path = afr.map.map.pathfind(self.owner.x,
-                                    self.owner.y,
+        path = afr.map.map.pathfind(me.x,
+                                    me.y,
                                     target.x,
                                     target.y)
         if path is None:
@@ -235,12 +244,11 @@ class AI(EntityComponent):
             getattr(me, action)(target)
         else:
             if len(path) > 0:
-                dx = path[0].x - self.owner.x
-                dy = path[0].y - self.owner.y
-                logging.debug("Found path, %s steps. First step is %s, %s",
+                dx = path[0].x - me.x
+                dy = path[0].y - me.y
+                logging.debug("Found path, %s steps. Next step is %s, %s",
                               len(path), dx, dy)
-                self.owner.x += dx
-                self.owner.y += dy
+                me.move(dx, dy)
             else:
                 logging.debug("Pathfinding says we're there already!!")
 
@@ -313,3 +321,7 @@ class Inventory(EntityComponent):
         else:
             best = None
         return best
+
+class Player(EntityComponent):
+    """Entity is controlled by the player."""
+    pass

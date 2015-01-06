@@ -37,6 +37,7 @@ def main():
                                                icon='@', zorder=1),
                 afr.entitycomponents.AI(),
                 afr.entitycomponents.Inventory(),
+                afr.entitycomponents.Player(),
                 ]
             )
         )

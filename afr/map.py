@@ -75,7 +75,7 @@ class Map(object):
                          (0, 1), (1, -1), (1, 0), (1, 1)):
                 if self.tile_is_traversable(x+i, y+j):
                     # n += 1
-                    node.neighbors.update(self.getTile(x+i, y+j))
+                    node.neighbors.add(self.getTile(x+i, y+j))
             # print("Added %s neighbors for %s, %s" % (n, node.x, node.y))
 
     def getTile(self, x, y):
