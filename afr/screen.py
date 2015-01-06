@@ -55,7 +55,7 @@ def draw_map(m, focus=None, clamp_to_map=True):
     entities_to_draw = {}
     for e in afr.entity.entities:
         if e.has_component('corporeal'):
-            if startx <= e.x <= endx and starty <= e.y <= endy:
+            if startx <= e.x < endx and starty <= e.y < endy:
                 z = e.zorder
                 if z in entities_to_draw:
                     entities_to_draw[z].append(e)

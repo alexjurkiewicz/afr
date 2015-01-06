@@ -10,7 +10,7 @@ class EntityComponent(object):
     """Entity Component abstract base class.
 
     Functionality for Entity objects is implemented in a modular fashion as
-    EntityComponent objects, which can be loaded/unloaded  at runtime into
+    EntityComponent objects, which can be loaded/unloaded at runtime into
     Entity objects.
 
     EntityComponents can export attributes/methods to the entity's base
@@ -53,7 +53,7 @@ class Fighter(EntityComponent):
         self.strength = strength
         self.team = team
 
-        self.export = ['strength', 'team', 'find_combat_target', 'attack']
+        self.export = ['strength', 'team', 'find_combat_target', 'attack', 'die']
 
     def find_combat_target(self):
         candidates = [e for e in afr.entity.entities if (e.has_component('corporeal') and e.has_component('fighter') and e.alive and e.team != self.owner.team)]
@@ -61,6 +61,11 @@ class Fighter(EntityComponent):
             return min(candidates, key=lambda c: afr.map.map.distance_between(self.owner.x, self.owner.y, c.x, c.y))
         except ValueError: # min can't handle empty lists
             return None
+
+    def die(self):
+        self.owner.alive = False
+        self.owner.blocks_movement = False
+        self.owner.icon = 'x'
 
     def attack(self, defender):
         attacker_str = random.randint(0, self.owner.get('strength'))
@@ -81,18 +86,14 @@ class Fighter(EntityComponent):
 
         if self.owner.current_hp <= 0:
             print("%s died!" % self.owner.name)
-            self.alive = False
-            self.blocks_movement = False
-            self.owner.set_icon(afr.util.load_icon('skull-crossed-bones.bmp'))
+            self.die()
         if defender.current_hp <= 0:
             print("%s died!" % defender.name)
-            defender.alive = False
-            defender.blocks_movement = False
-            defender.set_icon(afr.util.load_icon('skull-crossed-bones.bmp'))
+            defender.die()
 
 class Corporeal(EntityComponent):
     '''Entity exists on the map'''
-    def __init__(self, x, y, icon = '@', blocks_movement = True, zorder = 0):
+    def __init__(self, x, y, icon = 'g', blocks_movement = True, zorder = 0):
         self.x = x
         self.y = y
         self.blocks_movement = blocks_movement

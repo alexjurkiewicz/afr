@@ -30,7 +30,7 @@ def main():
             afr.entity.Entity('Urist', components = [
                 afr.entitycomponents.Creature(max_hp=100),
                 afr.entitycomponents.Fighter(strength=5, team='dwarves'),
-                afr.entitycomponents.Corporeal(x=coords[0][0], y=coords[0][1], zorder = 1),
+                afr.entitycomponents.Corporeal(x=coords[0][0], y=coords[0][1], icon = '@', zorder = 1),
                 afr.entitycomponents.AI(),
                 afr.entitycomponents.Inventory(),
                 ]
@@ -47,7 +47,7 @@ def main():
         )
         afr.entity.entities.append( \
             afr.entity.Entity('Sword', components = [
-                afr.entitycomponents.Corporeal(x=coords[2][0], y=coords[2][1], blocks_movement = False, zorder = -1),
+                afr.entitycomponents.Corporeal(x=coords[2][0], y=coords[2][1], icon = '(', blocks_movement = False, zorder = -1),
                 afr.entitycomponents.Weapon(strength=10),
                 ]
             )
