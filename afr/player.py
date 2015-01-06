@@ -17,7 +17,7 @@ KEY_MAP = {
 }
 
 
-def _action_move(action, entity):
+def _do_move(action, entity):
     """Figure out what to do with a move action and return (func, args)."""
     args = {'dx': 0, 'dy': 0}
     if '-left' in action:
@@ -36,14 +36,14 @@ def handle_player_action(action, entity):
     if action == 'quit-game':
         sys.exit(0)
     elif action.startswith('move-'):
-        func, args = _action_move(action, entity)
+        func, args = _do_move(action, entity)
     else:
         logging.warning("Unknown player action %s!", action)
 
     try:
         func(**args)
     except afr.entitycomponents.ComponentError as e:
-        logging.warning("Action failed: %s", e)
+        logging.warning("Action '%s' failed: %s", action, e)
 
 
 def key_to_action(key):
