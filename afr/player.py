@@ -2,7 +2,8 @@
 import logging
 import sys
 
-import afr.entitycomponents
+import afr.entitycomponent
+import afr.entity
 
 KEY_MAP = {
     'q': 'quit-game',
@@ -42,7 +43,7 @@ def handle_player_action(action, entity):
 
     try:
         func(**args)
-    except afr.entitycomponents.ComponentError as e:
+    except afr.entitycomponent.ComponentError as e:
         logging.warning("Action '%s' failed: %s", action, e)
 
 
