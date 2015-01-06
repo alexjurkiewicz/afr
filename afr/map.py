@@ -14,7 +14,7 @@ TILE_TYPES = {
     'floor': TileType(passable=True, icon='.'),
     'stone': TileType(passable=False, icon='#'),
     'boundary': TileType(passable=False, icon='#'),
-    }
+}
 
 
 class MapTile(object):
@@ -73,9 +73,9 @@ class Map(object):
             # n = 0
             for i, j in ((-1, -1), (-1, 0), (-1, 1), (0, -1),
                          (0, 1), (1, -1), (1, 0), (1, 1)):
-                if self.tile_is_traversable(x+i, y+j):
+                if self.tile_is_traversable(x + i, y + j):
                     # n += 1
-                    node.neighbors.add(self.getTile(x+i, y+j))
+                    node.neighbors.add(self.getTile(x + i, y + j))
             # print("Added %s neighbors for %s, %s" % (n, node.x, node.y))
 
     def getTile(self, x, y):
@@ -101,8 +101,8 @@ class Map(object):
         stone_threshold controls the probability of stone instead of dirt.
         """
         self.map = [[MapTile('dirt', x, y) if random.random() > stone_threshold
-                    else MapTile('stone', x, y)
-                    for x in range(self.width)] for y in range(self.height)]
+                     else MapTile('stone', x, y)
+                     for x in range(self.width)] for y in range(self.height)]
         self.updateTileNeighbors()
 
     def generate_interior(self, rooms=2):
@@ -114,7 +114,7 @@ class Map(object):
         # Add boundary
         for x in range(self.width):
             for y in range(self.height):
-                if x in (0, self.width-1) or y in (0, self.height-1):
+                if x in (0, self.width - 1) or y in (0, self.height - 1):
                     self.setTile(x, y, MapTile('boundary', x, y))
 
         # Carve out rooms
@@ -170,13 +170,13 @@ class Map(object):
         XXX: this method is REALLLLLLY unoptimised.
         """
         tries = 0
-        x = random.randint(0, self.width-1)
-        y = random.randint(0, self.height-1)
+        x = random.randint(0, self.width - 1)
+        y = random.randint(0, self.height - 1)
         while not self.tile_is_traversable(x, y):
             if tries > (self.max_path_length * 10):
                 raise RuntimeError("Failed to find empty coordinates!")
-            x = random.randint(0, self.width-1)
-            y = random.randint(0, self.height-1)
+            x = random.randint(0, self.width - 1)
+            y = random.randint(0, self.height - 1)
             tries += 1
         return (x, y)
 
@@ -208,7 +208,7 @@ class Map(object):
                 path.append(current)
                 logging.debug("Found path for %s,%s to %s,%s in %s cycles "
                               "(%s steps)", x1, y1, x2, y2,
-                              cycles, len(path)-1)
+                              cycles, len(path) - 1)
                 return path[-2::-1]  # [::-1] to include current tile
             openset.remove(current)
             closedset.add(current)
@@ -237,21 +237,22 @@ class Map(object):
     def distance_between(self, x1, y1, x2, y2):
         """Estimate distance between points."""
         # return abs(x1-x2) + abs(y1-y2) #manhattan difference
-        return math.sqrt(abs((x1-x2)**2) + abs((y1-y2)**2))  # real distance
+        # real distance
+        return math.sqrt(abs((x1 - x2) ** 2) + abs((y1 - y2) ** 2))
 
     def tile_is_traversable(self, x, y):
         """True if given tile is traversable."""
         return 0 <= x < self.width and 0 <= y < self.height and \
             self.getTile(x, y).tile.passable and \
             not any([e.blocks_movement and e.x == x and e.y == y
-                    for e in afr.entity.entities
-                    if e.has_component('corporeal')])
+                     for e in afr.entity.entities
+                     if e.has_component('corporeal')])
 
     def neighboring_tile_coords(self, x, y, traversable_only=False):
         """Return array of neighboring coordinates."""
-        neighbors = [(x+n[0], y+n[1]) for n in
+        neighbors = [(x + n[0], y + n[1]) for n in
                      ((-1, -1), (-1, 0), (-1, 1), (0, -1),
-                     (0, 1), (1, -1), (1, 0), (1, 1))]
+                      (0, 1), (1, -1), (1, 0), (1, 1))]
         if traversable_only:
             return [n for n in neighbors if
                     self.tile_is_traversable(n[0], n[1])]

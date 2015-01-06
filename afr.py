@@ -15,11 +15,13 @@ logging.basicConfig(level=logging.DEBUG,
 MAP_WIDTH = 40
 MAP_HEIGHT = 40
 
+
 def tick():
     for e in afr.entity.entities:
         if hasattr(e, 'run_ai'):
             logging.debug("Running AI for %s" % e.name)
             e.run_ai()
+
 
 def main():
     try:
@@ -38,7 +40,7 @@ def main():
                 afr.entitycomponents.AI(),
                 afr.entitycomponents.Inventory(),
                 afr.entitycomponents.Player(),
-                ]
+            ]
             )
         )
         afr.entity.entities.append(
@@ -47,23 +49,29 @@ def main():
                 afr.entitycomponents.Fighter(strength=10, team='goblins'),
                 afr.entitycomponents.Corporeal(x=coords[1][0], y=coords[1][1]),
                 afr.entitycomponents.AI(),
-                ]
+            ]
             )
         )
         afr.entity.entities.append(
-            afr.entity.Entity('Sword', components=[
-                afr.entitycomponents.Corporeal(x=coords[2][0], y=coords[2][1], icon = '(', blocks_movement = False, zorder = -1),
-                afr.entitycomponents.Weapon(strength=10),
-                ]
-            )
-        )
+            afr.entity.Entity(
+                'Sword',
+                components=[
+                    afr.entitycomponents.Corporeal(
+                        x=coords[2][0],
+                        y=coords[2][1],
+                        icon='(',
+                        blocks_movement=False,
+                        zorder=-1),
+                    afr.entitycomponents.Weapon(
+                        strength=10),
+                ]))
         afr.entity.entities.append(
             afr.entity.Entity('Goblin King', components=[
                 afr.entitycomponents.Creature(max_hp=40),
                 afr.entitycomponents.Fighter(strength=10, team='goblins'),
                 afr.entitycomponents.Corporeal(x=coords[3][0], y=coords[3][1]),
                 afr.entitycomponents.AI(),
-                ]
+            ]
             )
         )
         afr.entity.entities.append(
@@ -72,7 +80,7 @@ def main():
                 afr.entitycomponents.Fighter(strength=10, team='goblins'),
                 afr.entitycomponents.Corporeal(x=coords[4][0], y=coords[4][1]),
                 afr.entitycomponents.AI(),
-                ]
+            ]
             )
         )
 
@@ -88,7 +96,7 @@ def main():
             key = raw_input('_')
             if key == 'q':
                 run = False
-    except StandardError:
+    except Exception:
         raise
     sys.exit()
 

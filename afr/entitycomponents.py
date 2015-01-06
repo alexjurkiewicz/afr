@@ -116,7 +116,7 @@ class Fighter(EntityComponent):
         defender_str = random.randint(0, defender.get('strength'))
 
         if attacker_str == 0 or defender_str > attacker_str:
-            dmg = (defender_str - attacker_str)//2
+            dmg = (defender_str - attacker_str) // 2
             self.owner.current_hp -= dmg
             print("{attacker} ({attackerhp} hp) attacks "
                   "{defender} ({defenderhp} hp) but they block and "
@@ -270,12 +270,13 @@ class AI(EntityComponent):
                                        if afr.map.map.tile_is_traversable(
                                            me.x + i[0],
                                            me.y + i[1]
-                                           )
+                                       )
                                        ]
                 logging.debug("possible directions: %s", possible_directions)
                 movement = random.choice(possible_directions)
                 me.x += movement[0]
                 me.y += movement[1]
+
 
 class Inventory(EntityComponent):
 
@@ -322,6 +323,8 @@ class Inventory(EntityComponent):
             best = None
         return best
 
+
 class Player(EntityComponent):
+
     """Entity is controlled by the player."""
     pass
