@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.DEBUG,
 
 MAP_WIDTH = 40
 MAP_HEIGHT = 40
-ALLOWED_KEYS = 'qhjklyubn'
+ALLOWED_KEYS = set('qhjklyubn')
 
 
 def _tick(action):
@@ -24,7 +24,7 @@ def _tick(action):
     for e in afr.entity.entities:
         if e.has_component('player'):
             _player_action(action, e)
-        if hasattr(e, 'run_ai'):
+        if e.has_component('ai') and not e.has_component('player'):
             logging.debug("Running AI for %s" % e.name)
             e.run_ai()
 
@@ -32,23 +32,35 @@ def _tick(action):
 def _player_action(action, entity):
     """Resolve player action."""
     if action == 'move-left':
-        entity.move(-1, 0)
+        func = entity.move
+        args = {'dx': -1, 'dy': 0}
     elif action == 'move-right':
-        entity.move(1, 0)
+        func = entity.move
+        args = {'dx': 1, 'dy': 0}
     elif action == 'move-down':
-        entity.move(0, -1)
+        func = entity.move
+        args = {'dx': 0, 'dy': 1}
     elif action == 'move-up':
-        entity.move(0, 1)
+        func = entity.move
+        args = {'dx': 0, 'dy': -1}
     elif action == 'move-left-up':
-        entity.move(-1, 1)
+        func = entity.move
+        args = {'dx': -1, 'dy': -1}
     elif action == 'move-left-down':
-        entity.move(-1, -1)
+        func = entity.move
+        args = {'dx': -1, 'dy': 1}
     elif action == 'move-right-up':
-        entity.move(1, 1)
+        func = entity.move
+        args = {'dx': 1, 'dy': -1}
     elif action == 'move-right-down':
-        entity.move(1, -1)
+        func = entity.move
+        args = {'dx': 1, 'dy': 1}
     else:
         logging.warning("Unknown player action %s!", action)
+    try:
+        func(**args)
+    except afr.entitycomponents.ComponentError as e:
+        logging.warning("Action failed: %s", e)
 
 
 def main():
@@ -121,7 +133,13 @@ def main():
             afr.screen.draw_map(afr.map.map, focus=afr.entity.entities[0])
             key = None
             while key not in ALLOWED_KEYS:
-                key = raw_input('>_ ')
+                if key:
+                    print "Unknown command '%s'" % key
+                try:
+                    key = raw_input('>_ ')
+                except KeyboardInterrupt:
+                    run = False
+                    break
             if key == 'q':
                 run = False
             elif key == 'h':
@@ -142,6 +160,8 @@ def main():
                 action = 'move-right-down'
             if run:
                 _tick(action=action)
+        else:
+            print ""
 
     except Exception:
         raise

@@ -5,6 +5,19 @@ import afr.map
 import afr.util
 
 
+class ComponentError(Exception):
+
+    """Exception type for internal component signalling."""
+
+    def __init__(self, reason):
+        """Raise an exception with a reason."""
+        self.reason = reason
+
+    def __str__(self):
+        """Simple display."""
+        return self.reason
+
+
 class EntityComponent(object):
 
     """Entity Component abstract base class.
@@ -170,9 +183,20 @@ class Corporeal(EntityComponent):
         self.export = ['x', 'y', 'icon', 'blocks_movement', 'zorder', 'move']
 
     def move(self, dx, dy):
-        print "id:", id(self.x), id(self.owner.x)
-        self.owner.x += dx
-        self.owner.y += dy
+        """Move entity dx,dy tiles.
+
+        Raises an exception if the travel is impossible.
+        """
+        print dx, dy
+        if -1 > dx > 1 or -1 > dy > 1:
+            raise ComponentError("Attempted to move more than 1 tile.")
+        x = self.owner.x + dx
+        y = self.owner.y + dy
+        if afr.map.map.tile_is_traversable(x, y):
+            self.owner.x += dx
+            self.owner.y += dy
+        else:
+            raise ComponentError("There's no room at your destination!")
 
 
 class AI(EntityComponent):

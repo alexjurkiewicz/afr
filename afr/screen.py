@@ -8,26 +8,17 @@ import afr.util
 CAMERA_TILES_X = 20
 CAMERA_TILES_Y = 20
 
-global last_x, last_y
-last_x, last_y = (0, 0)
-
-
 def draw_map(m, focus=None, clamp_to_map=True):
     """Draw the map."""
+    # This is our buffer.
     new_screen = [[' ' for j in range(CAMERA_TILES_Y)]
                   for i in range(CAMERA_TILES_X)]
-
     # If we have a focus, ensure it's in the midle of the screen
     if focus:
         half_x = CAMERA_TILES_X // 2
         half_y = CAMERA_TILES_Y // 2
         startx = focus.x - half_x
         starty = focus.y - half_y
-
-    global last_x, last_y
-    last_x = startx
-    last_y = starty
-
     # Clamp draw rectangle to map border
     if clamp_to_map:
         if startx + CAMERA_TILES_X > m.width:
@@ -72,6 +63,6 @@ def draw_map(m, focus=None, clamp_to_map=True):
             print 'drawing {icon} at {x},{y}'.format(icon=icon, x=x, y=y)
             new_screen[x][y] = icon
 
-    # XXX: pretty sure this has swapped x,y coords...
-    for line in new_screen:
-        print ''.join(line)
+    # Ugly transformation since our buffer is by-column but we print by-row
+    for line in range(CAMERA_TILES_Y):
+        print ''.join([i[line] for i in new_screen])
