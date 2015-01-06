@@ -27,7 +27,6 @@ class Corporeal(afr.entitycomponent.EntityComponent):
 
         Raises an exception if the travel is impossible.
         """
-        print dx, dy
         if -1 > dx > 1 or -1 > dy > 1:
             raise afr.entitycomponent.ComponentError(
                 "Attempted to move more than 1 tile.")
