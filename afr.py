@@ -40,19 +40,18 @@ def main():
 
         # Test creature init
         coords = [afr.map.map.get_empty_coordinates() for i in range(5)]
-        afr.entity.entities.append(
-            afr.entity.Entity('Urist', components=[
-                afr.entitycomponents.Creature(max_hp=100),
-                afr.entitycomponents.Fighter(strength=5, team='dwarves'),
-                afr.entitycomponents.Corporeal(x=coords[0][0], y=coords[0][1],
-                                               icon='@', zorder=1),
-                afr.entitycomponents.AI(),
-                afr.entitycomponents.Inventory(),
-                afr.entitycomponents.Player(),
-            ]
-            )
+        player = afr.entity.Entity('Urist', components=[
+            afr.entitycomponents.Creature(max_hp=100),
+            afr.entitycomponents.Fighter(strength=5, team='dwarves'),
+            afr.entitycomponents.Corporeal(x=coords[0][0], y=coords[0][1],
+                                           icon='@', zorder=1),
+            afr.entitycomponents.AI(),
+            afr.entitycomponents.Inventory(),
+            afr.entitycomponents.Player(),
+        ]
         )
-        afr.entity.entities.append(
+        afr.entity.entities.add(player)
+        afr.entity.entities.add(
             afr.entity.Entity('Goblin King', components=[
                 afr.entitycomponents.Creature(max_hp=40),
                 afr.entitycomponents.Fighter(strength=10, team='goblins'),
@@ -61,7 +60,7 @@ def main():
             ]
             )
         )
-        afr.entity.entities.append(
+        afr.entity.entities.add(
             afr.entity.Entity(
                 'Sword',
                 components=[
@@ -74,7 +73,7 @@ def main():
                     afr.entitycomponents.Weapon(
                         strength=10),
                 ]))
-        afr.entity.entities.append(
+        afr.entity.entities.add(
             afr.entity.Entity('Goblin King', components=[
                 afr.entitycomponents.Creature(max_hp=40),
                 afr.entitycomponents.Fighter(strength=10, team='goblins'),
@@ -83,7 +82,7 @@ def main():
             ]
             )
         )
-        afr.entity.entities.append(
+        afr.entity.entities.add(
             afr.entity.Entity('Goblin King', components=[
                 afr.entitycomponents.Creature(max_hp=40),
                 afr.entitycomponents.Fighter(strength=10, team='goblins'),
@@ -99,7 +98,7 @@ def main():
         while run:
             n_tick += 1
             logging.debug("Tick: %s" % n_tick)
-            afr.screen.draw_map(afr.map.map, focus=afr.entity.entities[0])
+            afr.screen.draw_map(afr.map.map, focus=player)
             action = None
             while not action:
                 try:

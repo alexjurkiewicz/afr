@@ -1,6 +1,7 @@
-"""The entity class represents all entities in the game.
+"""This file provides the Entity class and global entity store.
 
-From units to items.
+The entity class represents all entities in the game.
+The global entity store holds all entities.
 """
 
 import logging
@@ -84,4 +85,4 @@ class Entity(object):
         return val
 
 global entities
-entities = []
+entities = set()
