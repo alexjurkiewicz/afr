@@ -60,7 +60,7 @@ class Entity(object):
                     delattr(self, obj)
 
     def has_component(self, component):
-        """Check if a certain component is attached."""
+        """Check if a component is attached by name."""
         return component in self.components
 
     def get(self, attrib, base=None):

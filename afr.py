@@ -14,13 +14,39 @@ logging.basicConfig(level=logging.DEBUG,
 
 MAP_WIDTH = 40
 MAP_HEIGHT = 40
+ALLOWED_KEYS = 'qhjklyubn'
 
 
-def tick():
+def _tick(action):
+    """Run game turn."""
     for e in afr.entity.entities:
+        if e.has_component('player'):
+            _player_action(action, e)
         if hasattr(e, 'run_ai'):
             logging.debug("Running AI for %s" % e.name)
             e.run_ai()
+
+
+def _player_action(action, entity):
+    """Resolve player action."""
+    if action == 'move-left':
+        entity.move(-1, 0)
+    elif action == 'move-right':
+        entity.move(1, 0)
+    elif action == 'move-down':
+        entity.move(0, -1)
+    elif action == 'move-up':
+        entity.move(0, 1)
+    elif action == 'move-left-up':
+        entity.move(-1, 1)
+    elif action == 'move-left-down':
+        entity.move(-1, -1)
+    elif action == 'move-right-up':
+        entity.move(1, 1)
+    elif action == 'move-right-down':
+        entity.move(1, -1)
+    else:
+        logging.warning("Unknown player action %s!", action)
 
 
 def main():
@@ -90,12 +116,31 @@ def main():
         while run:
             n_tick += 1
             logging.debug("Tick: %s" % n_tick)
-            tick()
             afr.screen.draw_map(afr.map.map, focus=afr.entity.entities[0])
-
-            key = raw_input('_')
+            key = None
+            while key not in ALLOWED_KEYS:
+                key = raw_input('>_ ')
             if key == 'q':
                 run = False
+            elif key == 'h':
+                action = 'move-left'
+            elif key == 'j':
+                action = 'move-down'
+            elif key == 'k':
+                action = 'move-up'
+            elif key == 'l':
+                action = 'move-right'
+            elif key == 'y':
+                action = 'move-left-up'
+            elif key == 'u':
+                action = 'move-right-up'
+            elif key == 'b':
+                action = 'move-left-down'
+            elif key == 'n':
+                action = 'move-right-down'
+            if run:
+                _tick(action=action)
+
     except Exception:
         raise
     sys.exit()
