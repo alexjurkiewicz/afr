@@ -1,3 +1,5 @@
+"""All base entity components."""
+
 import logging
 import random
 
@@ -351,4 +353,5 @@ class Inventory(EntityComponent):
 class Player(EntityComponent):
 
     """Entity is controlled by the player."""
+
     pass

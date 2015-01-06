@@ -4,6 +4,18 @@ import sys
 
 import afr.entitycomponents
 
+KEY_MAP = {
+    'q': 'quit-game',
+    'h': 'move-left',
+    'j': 'move-down',
+    'k': 'move-up',
+    'l': 'move-right',
+    'y': 'move-left-up',
+    'u': 'move-right-up',
+    'b': 'move-left-down',
+    'n': 'move-right-down',
+}
+
 
 def _action_move(action, entity):
     """Figure out what to do with a move action and return (func, args)."""
@@ -36,25 +48,4 @@ def handle_player_action(action, entity):
 
 def key_to_action(key):
     """Convert input keycode to action."""
-    if key == 'q':
-        action = 'quit-game'
-    elif key == 'h':
-        action = 'move-left'
-    elif key == 'j':
-        action = 'move-down'
-    elif key == 'k':
-        action = 'move-up'
-    elif key == 'l':
-        action = 'move-right'
-    elif key == 'y':
-        action = 'move-left-up'
-    elif key == 'u':
-        action = 'move-right-up'
-    elif key == 'b':
-        action = 'move-left-down'
-    elif key == 'n':
-        action = 'move-right-down'
-    else:
-        logging.warning("Unknown key '%'", key)
-        action = None
-    return action
+    return KEY_MAP.get(key)

@@ -108,6 +108,8 @@ def main():
                     print()
                     sys.exit(0)
                 action = afr.player.key_to_action(key)
+                if not action:
+                    logging.warning("Unknown key '%s'", key)
             _tick(action=action)
 
     except Exception:

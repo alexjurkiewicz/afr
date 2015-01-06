@@ -11,7 +11,8 @@ class Entity(object):
     """
     Represents an ingame object (creature, item, aura, etc).
 
-    Entitys are given functionality through EntityComponents which can be attached/detached at instantiation & runtime.
+    Entitys are given functionality through EntityComponents which can be
+    attached/detached at instantiation & runtime.
     """
 
     def __init__(self, name, components):
@@ -40,8 +41,8 @@ class Entity(object):
                 for obj in component.export:
                     if hasattr(self, obj):
                         raise AttributeError(
-                            "Component exports %s which is already in use on entity %s." %
-                            (obj, self.name))
+                            "Component exports %s which is already in use "
+                            "on entity %s." % (obj, self.name))
                     logging.debug("Setting attribute %s" % obj)
                     setattr(self, obj, getattr(component, obj))
 
