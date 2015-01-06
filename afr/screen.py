@@ -1,3 +1,5 @@
+"""Handles display of the game."""
+
 import logging
 
 import afr.entity
