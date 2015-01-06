@@ -1,18 +1,29 @@
-import collections, random, math, logging
+import logging
+import random
 
-import afr.util
 import afr.map
+import afr.util
+
 
 class EntityComponent(object):
-    '''
-    Functionality for Entity objects is implemented in a modular fashion as EntityComponent objects, which can be loaded/unloaded  at runtime into Entity objects.
 
-    EntityComponents can export attributes/methods to the entity's base namespace by specifying the name in list self.exports that is checked during the attach process.
-    '''
+    """Entity Component abstract base class.
+
+    Functionality for Entity objects is implemented in a modular fashion as
+    EntityComponent objects, which can be loaded/unloaded  at runtime into
+    Entity objects.
+
+    EntityComponents can export attributes/methods to the entity's base
+    namespace by specifying the name in list self.exports that is checked
+    during the attach process.
+    """
+
     def __init__(self):
+        """The constructor must be implemented."""
         raise NotImplementedError("EntityComponent-derived objects  must override __init__")
 
     def modify_attribute(self, attrib, cur):
+        """A default no-op for attribute modification."""
         return cur
 
 class Weapon(EntityComponent):
@@ -81,32 +92,20 @@ class Fighter(EntityComponent):
 
 class Corporeal(EntityComponent):
     '''Entity exists on the map'''
-    def __init__(self, x, y, icon, blocks_movement = True, zorder = 0):
+    def __init__(self, x, y, icon = '@', blocks_movement = True, zorder = 0):
         self.x = x
         self.y = y
-        self.icon = icon
         self.blocks_movement = blocks_movement
         self.zorder = zorder
-        
-        self.export = ['x', 'y', 'get_icon', 'blocks_movement', 'set_icon', 'zorder']
-        
-        self.__original_icon = icon
+        self.icon = icon
 
-    def get_icon(self):
-        return self.icon
-        
-    def set_icon(self, icon=None):
-        '''Change this entity's icon. Use none to reset to the original icon'''
-        if icon:
-            self.icon = icon
-        else:
-            self.icon == self.__original_icon
+        self.export = ['x', 'y', 'icon', 'blocks_movement', 'zorder']
 
 class AI(EntityComponent):
     '''Entity has a brain'''
     def __init__(self):
         self.brainstate = {}
-        
+
         self.export = ['run_ai']
 
     def run_ai(self):
@@ -115,7 +114,7 @@ class AI(EntityComponent):
         me = self.owner
         if not self.owner.alive:
             return
-        
+
         # If we have a target, ensure it's valid
         if 'target' in state and not state['target'].has_component('corporeal'):
             # The target has vanished (eg item that was picked up)
@@ -123,7 +122,7 @@ class AI(EntityComponent):
         if 'target' in state and state['target_action'] == 'attack' and not state['target'].alive:
             # Stop attacking after a target dies
             del(state['target'])
-        
+
         # Find a target
         if 'target' not in state:
             logging.debug("Finding target for %s" % me.name)
@@ -142,11 +141,11 @@ class AI(EntityComponent):
                     state['target_action'] = 'attack'
         if 'target' not in state:
             logging.debug("Can't find a target for %s" % me.name)
-        
+
         if 'target' in state:
             target = state['target']
             logging.debug("Using target: %s (%s, %s)" % (target.name, target.x, target.y))
-            
+
             path = afr.map.map.pathfind(self.owner.x, self.owner.y, target.x, target.y)
             if path == None:
                 logging.debug("Can't find path!")
@@ -171,7 +170,7 @@ class AI(EntityComponent):
                 movement = random.choice(possible_directions)
                 me.x += movement[0]
                 me.y += movement[1]
-                
+
 class Inventory(EntityComponent):
     '''Entity has an inventory'''
     def __init__(self):
@@ -188,7 +187,7 @@ class Inventory(EntityComponent):
         self.inventory.append(entity)
         entity.detach_component('corporeal')
         logging.debug("%s picks up %s" % (self.owner.name, entity.name))
-    
+
     def find_nearby_pickupable(self):
         candidates = [e for e in afr.entity.entities if (e.has_component('corporeal') and e.has_component('weapon'))]
         if candidates:

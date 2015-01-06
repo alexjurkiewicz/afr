@@ -1,13 +1,17 @@
-import collections, random, math, logging, itertools
+import collections
+import itertools
+import logging
+import math
+import random
 
 import afr.util
 
 TileType = collections.namedtuple('TileType', ['passable', 'icon'])
 TILE_TYPES = { \
-        'dirt': TileType(passable = True, icon = afr.util.load_icon('black32.bmp')),
-        'floor': TileType(passable = True, icon = afr.util.load_icon('black32.bmp')),
-        'stone': TileType(passable = False, icon = afr.util.load_icon('stone-tower-grey.bmp')),
-        'boundary': TileType(passable = False, icon = afr.util.load_icon('mountaintop.bmp')),
+    'dirt': TileType(passable=True, icon='.'),
+    'floor': TileType(passable=True, icon='.'),
+    'stone': TileType(passable=False, icon='#'),
+    'boundary': TileType(passable=False, icon='#'),
         }
 
 class Map(object):
@@ -18,7 +22,7 @@ class Map(object):
         self.max_path_length = min([self.width * self.height, max_path_length])
         self.map = [[MapTile('dirt', x, y) for x in range(width)] for y in range(height)]
         self.updateTileNeighbors()
-        
+
     def updateTileNeighbors(self):
         for x, y in itertools.product(range(self.width), range(self.height)):
             node = self.getTile(x, y)
@@ -28,7 +32,7 @@ class Map(object):
                     #n += 1
                     node.neighbors.append(self.getTile(x+i, y+j))
             #print("Added %s neighbors for %s, %s" % (n, node.x, node.y))
-            
+
     def getTile(self, x, y):
         try:
             return self.map[y][x]
@@ -41,7 +45,7 @@ class Map(object):
             self.map[y][x] = tile
         except IndexError:
             raise IndexError("Coordinates outside map")
-        
+
     def generate(self):
         '''Generate a random game map'''
         self.map = [[MapTile('dirt', x, y) if random.random() > 0.2 else MapTile('stone', x, y) for x in range(self.width)] for y in range(self.height)]
@@ -109,14 +113,14 @@ class Map(object):
             x = random.randint(0, self.width-1)
             y = random.randint(0, self.height-1)
         return (x, y)
-    
+
     def pathfind(self, x1, y1, x2, y2):
         '''return array of tiles which are a path between x1,y1 and x2,y2
         returns False if there is no path (care: a path of [] could be returned if you're already at the destination!)'''
         # thanks to http://scriptogr.am/jdp/post/pathfinding-with-python-graphs-and-a-star
         start = self.getTile(x1, y1)
         end = self.getTile(x2, y2)
-        
+
         openset = set()
         closedset = set()
         current = start
@@ -167,7 +171,7 @@ class Map(object):
         return 0 <= x < self.width and 0 <= y < self.height and \
                self.getTile(x, y).tile.passable and \
                not any([ e.blocks_movement and e.x == x and e.y == y for e in afr.entity.entities if e.has_component('corporeal')])
-    
+
     def neighboring_tile_coords(self, x, y, traversable_only = False):
         '''Return array of neighboring coordinates'''
         neighbors = [(x+n[0], y+n[1]) for n in ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))]
@@ -182,7 +186,7 @@ class MapTile(object):
         self.tile = TILE_TYPES[self.type]
         self.x = x
         self.y = y
-        
+
         # a star stuff
         self.g = 0
         self.h = 0
@@ -191,7 +195,7 @@ class MapTile(object):
     def setType(self, type):
         self.type = type
         self.tile = TILE_TYPES[self.type]
-    
+
     # a star stuff
     def move_cost(self, other):
         diagonal = abs(self.x - other.x) == 1 and abs(self.y - other.y) == 1

@@ -2,8 +2,7 @@ import sys
 from cx_Freeze import setup, Executable
 
 # re isn't automatically included as a dependency
-# Include icons in the final build
-build_exe_options = {"packages": ["re"], "include_files": ["res"]}
+#build_exe_options = {"packages": ["re"]}
 
 # Dont display console on windows
 base = None

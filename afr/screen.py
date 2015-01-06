@@ -1,34 +1,27 @@
-import pygame, logging
+import logging
 
-import afr.entity, afr.util
+import afr.entity
+import afr.util
 
-RES_X = 800
-RES_Y = 600
-TILE_WIDTH = TILE_HEIGHT = 32
-CAMERA_TILES_X = RES_X // TILE_WIDTH
-CAMERA_TILES_Y = RES_Y // TILE_HEIGHT
+CAMERA_TILES_X = 20
+CAMERA_TILES_Y = 20
 
 global last_x, last_y
 last_x, last_y = (0, 0)
 
-def init_screen():
-    pygame.init()
-    global screen
-    screen = pygame.display.set_mode((RES_X, RES_Y))
-    screen.fill((0,0,0))
-    logging.info("Camera shows %s tiles across and %s down" % (CAMERA_TILES_X, CAMERA_TILES_Y))
 
-def draw_map(m, screen, focus=None, clamp_to_map=True):
-    '''Draw the map starting from x,y'''
-    screen.fill((0,0,0))
-    
+def draw_map(m, focus=None, clamp_to_map=True):
+    """Draw the map."""
+    new_screen = [[' ' for j in range(CAMERA_TILES_Y)]
+                  for i in range(CAMERA_TILES_X)]
+
     # If we have a focus, ensure it's in the midle of the screen
     if focus:
         half_x = CAMERA_TILES_X // 2
         half_y = CAMERA_TILES_Y // 2
         startx = focus.x - half_x
         starty = focus.y - half_y
-    
+
     global last_x, last_y
     last_x = startx
     last_y = starty
@@ -46,13 +39,18 @@ def draw_map(m, screen, focus=None, clamp_to_map=True):
     # Don't try to draw tiles beyond the edge of the map
     endx = max([min([startx + CAMERA_TILES_X, m.width]), 0])
     endy = max([min([starty + CAMERA_TILES_Y, m.height]), 0])
-    
-    logging.debug("Drawing map from %s, %s to %s, %s" % (startx, starty, endx, endy))
+
+    logging.debug("Drawing map from %s, %s to %s, %s",
+                  startx, starty, endx, endy)
 
     for j in range(starty, endy):
         for i in range(startx, endx):
             if i >= 0 and j >= 0:
-                screen.blit(m.getTile(i, j).tile.icon, (TILE_WIDTH*(i-startx), TILE_HEIGHT*(j-starty)))
+                icon = m.getTile(i, j).tile.icon
+                x = i - startx
+                y = j - starty
+                # logging.debug('drawing {icon} at {x},{y}'.format(icon, x, y))
+                new_screen[x][y] = icon
 
     entities_to_draw = {}
     for e in afr.entity.entities:
@@ -65,5 +63,13 @@ def draw_map(m, screen, focus=None, clamp_to_map=True):
                     entities_to_draw[z] = [e]
     for z in sorted(entities_to_draw.keys()):
         for e in entities_to_draw[z]:
-            logging.debug("Drawing %s" % e.name)
-            screen.blit(e.get_icon(), ((e.x-startx)*TILE_WIDTH, (e.y-starty)*TILE_HEIGHT))
+            # logging.debug("Drawing %s" % e.name)
+            icon = e.icon
+            x = e.x - startx
+            y = e.y - starty
+            print 'drawing {icon} at {x},{y}'.format(icon=icon, x=x, y=y)
+            new_screen[x][y] = icon
+
+    # XXX: pretty sure this has swapped x,y coords...
+    for line in new_screen:
+        print ''.join(line)
