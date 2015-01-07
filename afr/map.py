@@ -128,8 +128,8 @@ class Map(object):
             endx = startx + width
             endy = starty + height
             room_coords.append((startx, starty, endx, endy))
-            logging.debug("Building room at %s,%s - %s,%s" % (startx, starty,
-                                                              endx, endy))
+            # logging.debug("Building room at %s,%s - %s,%s" % (startx, starty,
+            #                                                   endx, endy))
             for x in range(startx, endx):
                 for y in range(starty, endy):
                     self.setTile(x, y, MapTile('dirt', x, y))
@@ -150,16 +150,16 @@ class Map(object):
 
     def carve_tunnel(self, x1, y1, x2, y2):
         """Carve a direct tunnel from x1,y1 to x2,y2."""
-        logging.debug("Carving tunnel between %s,%s and %s,%s",
-                      x1, y1, x2, y2)
+        # logging.debug("Carving tunnel between %s,%s and %s,%s",
+        #              x1, y1, x2, y2)
         cursorx = x1
         cursory = y1
         while cursorx != x2:
-            logging.debug("Clearing space at %s,%s" % (cursorx, cursory))
+            # logging.debug("Clearing space at %s,%s" % (cursorx, cursory))
             self.setTile(cursorx, cursory, MapTile('dirt', cursorx, cursory))
             cursorx += 1 if x2 > cursorx else -1
         while cursory != y2:
-            logging.debug("Clearing space at %s,%s" % (cursorx, cursory))
+            # logging.debug("Clearing space at %s,%s" % (cursorx, cursory))
             self.setTile(cursorx, cursory, MapTile('dirt', cursorx, cursory))
             cursory += 1 if y2 > cursory else -1
 

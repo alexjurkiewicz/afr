@@ -1,11 +1,7 @@
-"""All base entity components."""
-
-import afr.entitycomponent
-import afr.map
-import afr.util
+from afr.entitycomponent import EntityComponent
 
 
-class Weapon(afr.entitycomponent.EntityComponent):
+class Weapon(EntityComponent):
 
     """Weapons provide bonus attributes.
 

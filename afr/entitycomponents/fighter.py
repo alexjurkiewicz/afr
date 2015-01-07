@@ -1,9 +1,10 @@
 import random
 
-import afr.entitycomponent
+import afr.entity
+from afr.entitycomponent import EntityComponent
 
 
-class Fighter(afr.entitycomponent.EntityComponent):
+class Fighter(EntityComponent):
 
     """Fighters can engage in combat with other entities."""
 

@@ -1,9 +1,9 @@
-import afr.entitycomponent
-
 import logging
 
+from afr.entitycomponent import EntityComponent
 
-class Inventory(afr.entitycomponent.EntityComponent):
+
+class Inventory(EntityComponent):
 
     """Entity has an inventory.
 

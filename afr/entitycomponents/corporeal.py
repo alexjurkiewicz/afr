@@ -1,7 +1,8 @@
-import afr.entitycomponent
+import afr.map
+from afr.entitycomponent import EntityComponent
 
 
-class Corporeal(afr.entitycomponent.EntityComponent):
+class Corporeal(EntityComponent):
 
     """Corporeal entities exist on the map."""
 

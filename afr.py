@@ -8,7 +8,7 @@ import logging
 import sys
 
 import afr.entity
-import afr.entitycomponent
+import afr.entitycomponents
 import afr.map
 import afr.player
 import afr.screen
@@ -41,22 +41,22 @@ def main():
         # Test creature init
         coords = [afr.map.map.get_empty_coordinates() for i in range(5)]
         player = afr.entity.Entity('Urist', components=[
-            afr.entitycomponent.Creature(max_hp=100),
-            afr.entitycomponent.Fighter(strength=5, team='dwarves'),
-            afr.entitycomponent.Corporeal(x=coords[0][0], y=coords[0][1],
-                                          icon='@', zorder=1),
-            afr.entitycomponent.AI(),
-            afr.entitycomponent.Inventory(),
-            afr.entitycomponent.Player(),
+            afr.entitycomponents.Creature(max_hp=100),
+            afr.entitycomponents.Fighter(strength=5, team='dwarves'),
+            afr.entitycomponents.Corporeal(x=coords[0][0], y=coords[0][1],
+                                           icon='@', zorder=1),
+            afr.entitycomponents.AI(),
+            afr.entitycomponents.Inventory(),
+            afr.entitycomponents.Player(),
         ]
         )
         afr.entity.entities.add(player)
         afr.entity.entities.add(
             afr.entity.Entity('Goblin King', components=[
-                afr.entitycomponent.Creature(max_hp=40),
-                afr.entitycomponent.Fighter(strength=10, team='goblins'),
-                afr.entitycomponent.Corporeal(x=coords[1][0], y=coords[1][1]),
-                afr.entitycomponent.AI(),
+                afr.entitycomponents.Creature(max_hp=40),
+                afr.entitycomponents.Fighter(strength=10, team='goblins'),
+                afr.entitycomponents.Corporeal(x=coords[1][0], y=coords[1][1]),
+                afr.entitycomponents.AI(),
             ]
             )
         )
@@ -64,30 +64,30 @@ def main():
             afr.entity.Entity(
                 'Sword',
                 components=[
-                    afr.entitycomponent.Corporeal(
+                    afr.entitycomponents.Corporeal(
                         x=coords[2][0],
                         y=coords[2][1],
                         icon='(',
                         blocks_movement=False,
                         zorder=-1),
-                    afr.entitycomponent.Weapon(
+                    afr.entitycomponents.Weapon(
                         strength=10),
                 ]))
         afr.entity.entities.add(
             afr.entity.Entity('Goblin King', components=[
-                afr.entitycomponent.Creature(max_hp=40),
-                afr.entitycomponent.Fighter(strength=10, team='goblins'),
-                afr.entitycomponent.Corporeal(x=coords[3][0], y=coords[3][1]),
-                afr.entitycomponent.AI(),
+                afr.entitycomponents.Creature(max_hp=40),
+                afr.entitycomponents.Fighter(strength=10, team='goblins'),
+                afr.entitycomponents.Corporeal(x=coords[3][0], y=coords[3][1]),
+                afr.entitycomponents.AI(),
             ]
             )
         )
         afr.entity.entities.add(
             afr.entity.Entity('Goblin King', components=[
-                afr.entitycomponent.Creature(max_hp=40),
-                afr.entitycomponent.Fighter(strength=10, team='goblins'),
-                afr.entitycomponent.Corporeal(x=coords[4][0], y=coords[4][1]),
-                afr.entitycomponent.AI(),
+                afr.entitycomponents.Creature(max_hp=40),
+                afr.entitycomponents.Fighter(strength=10, team='goblins'),
+                afr.entitycomponents.Corporeal(x=coords[4][0], y=coords[4][1]),
+                afr.entitycomponents.AI(),
             ]
             )
         )

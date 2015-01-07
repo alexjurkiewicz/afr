@@ -1,6 +1,7 @@
-import afr.entitycomponent
+from afr.entitycomponent import EntityComponent
 
-class Creature(afr.entitycomponent.EntityComponent):
+
+class Creature(EntityComponent):
 
     """Creatures have hitpoints and can be alive or dead."""
 

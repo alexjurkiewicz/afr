@@ -1,10 +1,11 @@
 import logging
 import random
 
-import afr.entitycomponent
+import afr.map
+from afr.entitycomponent import EntityComponent
 
 
-class AI(afr.entitycomponent.EntityComponent):
+class AI(EntityComponent):
 
     """Entity has a brain."""
 
