@@ -11,10 +11,13 @@ class Weapon(EntityComponent):
     XXX: support more modification schemes than addition (eg multiplication).
     """
 
-    def __init__(self, **bonus_attribs):
+    def __init__(self, slot='hand', **bonus_attribs):
         """Supply affected attribs as str(attrib_name)=int(modifier)."""
+        self.slot = slot
         for key in bonus_attribs:
             setattr(self, key, bonus_attribs[key])
+
+        self.export = ['slot']
 
     def modify_attribute(self, attrib, cur):
         """Get modified attrib."""

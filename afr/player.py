@@ -19,6 +19,7 @@ KEY_MAP = {
     'g': 'pick-up',
     'i': 'show-inventory',
     '.': 'wait',
+    'e': 'equip',
 }
 
 
@@ -86,6 +87,26 @@ def _do_wait(action, entity):
     return
 
 
+def _do_equip(action, entity):
+    if len(entity.inventory) < 1:
+        raise ActionError("Your inventory is empty!")
+    prompt = "Equip which item?\n"
+    for i in range(len(entity.inventory)):
+        prompt += '%s: %s\n' % (i, entity.inventory[i])
+    prompt += '\n'
+    item_num = raw_input(prompt)
+    try:
+        item_num = int(item_num)
+    except:
+        raise ActionError("Unrecognised input '%r'." % item_num)
+    # XXX: this shuffle is probably a sign of bad design
+    item = entity.inventory[item_num]
+    del(entity.inventory[item_num])
+    success = entity.equip(item)
+    if not success:
+        raise ActionError("Couldn't equip %s." % item.name)
+
+
 def handle_player_action(action, entity):
     """Resolve player action."""
     # XXX: this action -> func mapping should probably be defined in the KEY_MAP dict
@@ -99,6 +120,8 @@ def handle_player_action(action, entity):
         func = _do_show
     elif action == 'wait':
         func = _do_wait
+    elif action == 'equip':
+        func = _do_equip
     else:
         logging.warning("Unknown player action %s!", action)
         return False

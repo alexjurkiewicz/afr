@@ -1,6 +1,8 @@
+import logging
+
 from afr.entitycomponent import EntityComponent
 
-SLOTS = { 'humanoid': ['left hand', 'torso'] }
+SLOTS = { 'humanoid': ['hand-left', 'torso'] }
 
 class Creature(EntityComponent):
 
@@ -19,8 +21,27 @@ class Creature(EntityComponent):
         self.alive = True
         self.slots = dict.fromkeys(SLOTS.get(shape, []))
 
-        self.export = ['max_hp', 'current_hp', 'alive', 'slots']
+        self.export = ['max_hp', 'current_hp', 'alive', 'slots', 'equip']
 
     def equip(self, item, slot=None):
-        """Equip an item. Slot is determined automatically if unspecified."""
-        raise NotImplemented
+        """Equip an item. Slot is determined automatically if unspecified.
+        
+        Returns boolean success.
+        """
+        if slot:
+            if self.slot(slot):
+                return False
+            else:
+                target_slot = slot
+        else:
+            # Use the first slot that starts with the weapon's slot specification and is empty
+            possible_slots = [s for s in self.slots if s.startswith(item.slot) and not self.slots[s]]
+            if not possible_slots:
+                return False
+            else:
+                target_slot = possible_slots[0]
+
+        assert not item.has_component('corporeal')
+        self.slots[target_slot] = item
+        logging.debug("%s equips %s in slot %s" % (self.owner.name, item.name, target_slot))
+        return True
