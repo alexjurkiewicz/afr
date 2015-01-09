@@ -71,10 +71,20 @@ def _do_pickup(action, entity):
     items = afr.entity.at_position(entity.x, entity.y, blocks_movement=False)
     if not items:
         raise ActionError('Nothing to pick up.')
-    if len(items) != 1:
-        raise RuntimeError('More than one item on this tile, not supported!')
-    entity.pick_up(items[0])
-    return
+    elif len(items) == 1:
+        item_num = 0
+    else:
+        prompt = "Pick up which item?\n"
+        for i in range(len(items)):
+            prompt += '%s: %s\n' % (i, items[i])
+        prompt += '\n'
+        item_num = raw_input(prompt)
+        try:
+            item_num = int(item_num)
+        except:
+            raise ActionError("Unrecognised input '%r'." % item_num)
+        # XXX: this shuffle is probably a sign of bad design
+    entity.pick_up(items[item_num])
 
 
 def _do_show(action, entity):
@@ -85,7 +95,7 @@ def _do_show(action, entity):
 
 
 def _do_wait(action, entity):
-    return
+    pass
 
 
 def _do_equip(action, entity):

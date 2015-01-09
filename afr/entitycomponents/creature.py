@@ -47,7 +47,7 @@ class Creature(EntityComponent):
             # Use the first slot that starts with the weapon's slot
             # specification and is empty
             possible_slots = [
-                s for s in self.slots if s.startswith(
+                s for s in self.slots if hasattr(item, 'slot') and s.startswith(
                     item.slot) and not self.slots[s]]
             if not possible_slots:
                 return False

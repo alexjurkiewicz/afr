@@ -73,15 +73,16 @@ class Entity(object):
         strength))
         """
         val = base if base else getattr(self, attrib)
-        logging.debug("Getting attribute %s for %s (initial: %s)",
-                      attrib, self.name, val)
+        #logging.debug("Getting attribute %s for %s (initial: %s)",
+                      #attrib, self.name, val)
         for c in self.components:
             component = self.components[c]
             oldval = val
             val = component.modify_attribute(attrib, val)
             if val != oldval:
-                logging.debug("Component %s modified attribute (new: %s)",
-                              c, val)
+                #logging.debug("Component %s modified attribute (new: %s)",
+                              #c, val)
+                pass
         return val
 
     def __str__(self):
