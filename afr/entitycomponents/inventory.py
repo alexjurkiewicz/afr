@@ -29,9 +29,10 @@ class Inventory(EntityComponent):
 
         XXX: assumes the item is corporeal (not true in the future case of
         trading, etc).
+        XXX: doesn't sanity check the pic up request (ie that the item is under us)
         """
-        self.inventory.append(entity)
         entity.detach_component('corporeal')
+        self.inventory.append(entity)
         logging.debug("%s picks up %s" % (self.owner.name, entity.name))
 
     def find_nearby_pickupable(self):

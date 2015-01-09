@@ -16,6 +16,7 @@ KEY_MAP = {
     'u': 'move-right-up',
     'b': 'move-left-down',
     'n': 'move-right-down',
+    'g': 'pick-up',
 }
 
 
@@ -33,7 +34,10 @@ class ActionError(Exception):
 
 
 def _do_move(action, entity):
-    """Figure out what to do with a move action and return (func, args)."""
+    """Handle move actions.
+    
+    These may be an attack request or (TODO) a force move request.
+    """
     args = {'dx': 0, 'dy': 0}
     if '-left' in action:
         args['dx'] = -1
@@ -48,15 +52,25 @@ def _do_move(action, entity):
     if blocking_entities:
         blocker = blocking_entities[0]
         if len(blocking_entities) != 1:
-            raise ActionError('More than one unit on this tile, not supported!')
+            raise RuntimeError('More than one unit on this tile, not supported!')
         if entity.team != blocker.team:
             entity.attack(blocker)
-            return True
+            return
     # note: tile_is_traversable also checks for entities in the way
     if not afr.map.map.tile_is_traversable(*target):
         raise ActionError('Something is in the way!')
     entity.move(**args)
-    return False
+
+
+def _do_pickup(action, entity):
+    """Handle pickup actions."""
+    items = afr.entity.at_position(entity.x, entity.y, blocks_movement=False)
+    if not items:
+        raise ActionError('Nothing to pick up.')
+    if len(items) != 1:
+        raise RuntimeError('More than one item on this tile, not supported!')
+    entity.pick_up(items[0])
+    return
 
 
 def handle_player_action(action, entity):
@@ -65,6 +79,8 @@ def handle_player_action(action, entity):
         sys.exit(0)
     elif action.startswith('move-'):
         func = _do_move
+    elif action == 'pick-up':
+        func = _do_pickup
     else:
         logging.warning("Unknown player action %s!", action)
         return False
