@@ -17,6 +17,7 @@ KEY_MAP = {
     'b': 'move-left-down',
     'n': 'move-right-down',
     'g': 'pick-up',
+    'i': 'show-inventory',
 }
 
 
@@ -73,14 +74,24 @@ def _do_pickup(action, entity):
     return
 
 
+def _do_show(action, entity):
+    if action == 'show-inventory':
+        message = 'Inventory:\n'
+        message += ', '.join(str(i) for i in entity.inventory)
+        raise ActionError(message)
+
+
 def handle_player_action(action, entity):
     """Resolve player action."""
+    # XXX: this action -> func mapping should probably be defined in the KEY_MAP dict
     if action == 'quit-game':
         sys.exit(0)
     elif action.startswith('move-'):
         func = _do_move
     elif action == 'pick-up':
         func = _do_pickup
+    elif action.startswith('show-'):
+        func = _do_show
     else:
         logging.warning("Unknown player action %s!", action)
         return False
