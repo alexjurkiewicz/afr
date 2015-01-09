@@ -64,7 +64,7 @@ def main():
     afr.entity.entities.add(player)
     afr.entity.entities.add(
         afr.entity.Entity('Goblin King', components=[
-            afr.entitycomponents.Creature(max_hp=40),
+            afr.entitycomponents.Creature(max_hp=40, size='small'),
             afr.entitycomponents.Fighter(strength=10, team='goblins'),
             afr.entitycomponents.Corporeal(x=coords[1][0], y=coords[1][1]),
             afr.entitycomponents.AI(),
@@ -86,7 +86,7 @@ def main():
             ]))
     afr.entity.entities.add(
         afr.entity.Entity('Goblin King', components=[
-            afr.entitycomponents.Creature(max_hp=40),
+            afr.entitycomponents.Creature(max_hp=40, size='small'),
             afr.entitycomponents.Fighter(strength=10, team='goblins'),
             afr.entitycomponents.Corporeal(x=coords[3][0], y=coords[3][1]),
             afr.entitycomponents.AI(),
@@ -95,7 +95,7 @@ def main():
     )
     afr.entity.entities.add(
         afr.entity.Entity('Goblin King', components=[
-            afr.entitycomponents.Creature(max_hp=40),
+            afr.entitycomponents.Creature(max_hp=40, size='small'),
             afr.entitycomponents.Fighter(strength=10, team='goblins'),
             afr.entitycomponents.Corporeal(x=coords[4][0], y=coords[4][1]),
             afr.entitycomponents.AI(),
