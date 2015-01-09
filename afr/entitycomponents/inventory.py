@@ -17,13 +17,6 @@ class Inventory(EntityComponent):
         self.inventory = []
         self.export = ['inventory', 'pick_up', 'find_nearby_pickupable']
 
-    def modify_attribute(self, attrib, cur):
-        """See if any inventory items modify the attrib."""
-        val = cur
-        for item in self.inventory:
-            val = item.get(attrib, val)
-        return val
-
     def pick_up(self, entity):
         """Add the named entity to our inventory.
 

@@ -23,6 +23,15 @@ class Creature(EntityComponent):
 
         self.export = ['max_hp', 'current_hp', 'alive', 'slots', 'equip']
 
+    def modify_attribute(self, attrib, cur):
+        """See if any equipped items modify the attrib."""
+        val = cur
+        for item in self.slots.values():
+            if not item:
+                continue
+            val = item.get(attrib, val)
+        return val
+
     def equip(self, item, slot=None):
         """Equip an item. Slot is determined automatically if unspecified.
         
