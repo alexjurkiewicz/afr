@@ -12,7 +12,7 @@ class Weapon(EntityComponent):
     """
 
     def __init__(self, slot='hand', **bonus_attribs):
-        """Supply affected attribs as str(attrib_name)=int(modifier)."""
+        """Supply bonus_attribs like {'strength': 10}."""
         self.slot = slot
         for key in bonus_attribs:
             setattr(self, key, bonus_attribs[key])
