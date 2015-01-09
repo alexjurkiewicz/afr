@@ -1,5 +1,6 @@
 import logging
 
+import afr.entity
 from afr.entitycomponent import EntityComponent
 
 

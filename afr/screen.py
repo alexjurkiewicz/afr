@@ -8,6 +8,7 @@ import afr.util
 CAMERA_TILES_X = 20
 CAMERA_TILES_Y = 20
 
+
 def draw_map(m, focus=None, clamp_to_map=True):
     """Draw the map."""
     # This is our buffer.
@@ -60,7 +61,7 @@ def draw_map(m, focus=None, clamp_to_map=True):
             icon = e.icon
             x = e.x - startx
             y = e.y - starty
-            print 'drawing {icon} at {x},{y}'.format(icon=icon, x=x, y=y)
+            # print 'drawing {icon} at {x},{y}'.format(icon=icon, x=x, y=y)
             new_screen[x][y] = icon
 
     # Ugly transformation since our buffer is by-column but we print by-row

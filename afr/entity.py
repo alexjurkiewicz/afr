@@ -84,5 +84,17 @@ class Entity(object):
                               c, val)
         return val
 
+    def __str__(self):
+        """Basic display for now."""
+        return "<Entity {}>".format(self.name)
+
+    def __repr__(self):
+        """Duplicate str."""
+        return self.__str__()
+
 global entities
 entities = set()
+
+
+def at_position(x, y):
+    return filter(lambda e: e.x == x and e.y == y, entities)

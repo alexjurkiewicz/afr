@@ -50,6 +50,15 @@ class MapTile(object):
         """Clear the list of neighbors."""
         self.neighbors = set()
 
+    def __str__(self):
+        """Simple representation."""
+        return "<Tile {x},{y} ({type})>".format(x=self.x, y=self.y,
+                                                type=self.type)
+
+    def __repr__(self):
+        """Simple representation."""
+        return self.__str__()
+
 
 class Map(object):
 
