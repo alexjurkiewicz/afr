@@ -2,7 +2,8 @@ import logging
 
 from afr.entitycomponent import EntityComponent
 
-SLOTS = { 'humanoid': ['hand-left', 'torso'] }
+SLOTS = {'humanoid': ['hand-left', 'torso']}
+
 
 class Creature(EntityComponent):
 
@@ -34,7 +35,7 @@ class Creature(EntityComponent):
 
     def equip(self, item, slot=None):
         """Equip an item. Slot is determined automatically if unspecified.
-        
+
         Returns boolean success.
         """
         if slot:
@@ -43,8 +44,11 @@ class Creature(EntityComponent):
             else:
                 target_slot = slot
         else:
-            # Use the first slot that starts with the weapon's slot specification and is empty
-            possible_slots = [s for s in self.slots if s.startswith(item.slot) and not self.slots[s]]
+            # Use the first slot that starts with the weapon's slot
+            # specification and is empty
+            possible_slots = [
+                s for s in self.slots if s.startswith(
+                    item.slot) and not self.slots[s]]
             if not possible_slots:
                 return False
             else:
@@ -52,5 +56,7 @@ class Creature(EntityComponent):
 
         assert not item.has_component('corporeal')
         self.slots[target_slot] = item
-        logging.debug("%s equips %s in slot %s" % (self.owner.name, item.name, target_slot))
+        logging.debug(
+            "%s equips %s in slot %s" %
+            (self.owner.name, item.name, target_slot))
         return True

@@ -102,7 +102,8 @@ def at_position(x, y, blocks_movement=None):
     blocks_movement=True/False will only consider relevant entities. Default None considers all.
     """
     if blocks_movement is not None:
-        func = lambda e: e.has_component('corporeal') and e.x == x and e.y == y and e.blocks_movement == blocks_movement
+        func = lambda e: e.has_component(
+            'corporeal') and e.x == x and e.y == y and e.blocks_movement == blocks_movement
     else:
         func = lambda e: e.x == x and e.y == y
     return [e for e in entities if func(e)]

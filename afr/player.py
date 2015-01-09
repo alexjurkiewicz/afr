@@ -38,7 +38,7 @@ class ActionError(Exception):
 
 def _do_move(action, entity):
     """Handle move actions.
-    
+
     These may be an attack request or (TODO) a force move request.
     """
     args = {'dx': 0, 'dy': 0}
@@ -55,7 +55,8 @@ def _do_move(action, entity):
     if blocking_entities:
         blocker = blocking_entities[0]
         if len(blocking_entities) != 1:
-            raise RuntimeError('More than one unit on this tile, not supported!')
+            raise RuntimeError(
+                'More than one unit on this tile, not supported!')
         if entity.team != blocker.team:
             entity.attack(blocker)
             return
@@ -109,7 +110,8 @@ def _do_equip(action, entity):
 
 def handle_player_action(action, entity):
     """Resolve player action."""
-    # XXX: this action -> func mapping should probably be defined in the KEY_MAP dict
+    # XXX: this action -> func mapping should probably be defined in the
+    # KEY_MAP dict
     if action == 'quit-game':
         sys.exit(0)
     elif action.startswith('move-'):

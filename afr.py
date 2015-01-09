@@ -43,6 +43,7 @@ def tick(action):
             e.run_ai()
     return True
 
+
 def main():
     """Main game loop."""
     # Mapgen
