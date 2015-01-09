@@ -32,7 +32,7 @@ class Inventory(EntityComponent):
         """Return closest pickupable or None."""
         candidates = [e for e in afr.entity.entities if
                       (e.has_component('corporeal') and
-                       e.has_component('weapon'))]
+                       e.has_component('equippable'))]
         if candidates:
             best = min(candidates,
                        key=lambda c:

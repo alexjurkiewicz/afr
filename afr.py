@@ -82,7 +82,7 @@ def main():
                     icon='(',
                     blocks_movement=False,
                     zorder=-1),
-                afr.entitycomponents.Weapon(
+                afr.entitycomponents.Equippable(
                     strength=10),
             ]))
     afr.entity.entities.add(

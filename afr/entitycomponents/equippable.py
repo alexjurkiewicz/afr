@@ -1,12 +1,9 @@
 from afr.entitycomponent import EntityComponent
 
 
-class Weapon(EntityComponent):
+class Equippable(EntityComponent):
 
-    """Weapons provide bonus attributes.
-
-    They are stored in an entity's inventory, not directly on the entity
-    itself.
+    """Equippables provide bonus attributes.
 
     XXX: support more modification schemes than addition (eg multiplication).
     """
