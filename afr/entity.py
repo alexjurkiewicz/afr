@@ -96,5 +96,10 @@ global entities
 entities = set()
 
 
-def at_position(x, y):
-    return filter(lambda e: e.x == x and e.y == y, entities)
+def at_position(x, y, blocks_movement=False):
+    """Return a list of entities at the given position.
+
+    blocks_movement=True will only consider movement-blocking entities.
+    """
+    func = lambda e: e.x == x and e.y == y
+    return [e for e in entities if func(e)]

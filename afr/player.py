@@ -44,9 +44,19 @@ def _do_move(action, entity):
     elif '-down' in action:
         args['dy'] = 1
     target = (entity.x + args['dx'], entity.y + args['dy'])
+    blocking_entities = afr.entity.at_position(*target, blocks_movement=True)
+    if blocking_entities:
+        blocker = blocking_entities[0]
+        if len(blocking_entities) != 1:
+            raise ActionError('More than one unit on this tile, not supported!')
+        if entity.team != blocker.team:
+            entity.attack(blocker)
+            return True
+    # note: tile_is_traversable also checks for entities in the way
     if not afr.map.map.tile_is_traversable(*target):
         raise ActionError('Something is in the way!')
     entity.move(**args)
+    return False
 
 
 def handle_player_action(action, entity):
