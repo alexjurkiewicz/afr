@@ -27,6 +27,9 @@ def tick(action):
     # XXX: assumes there is only one player entity, but doesn't enforce it
     for e in afr.entity.entities:
         if e.has_component('player'):
+            if e.current_hp <= 0:
+                logging.info("Game over!")
+                sys.exit()
             logging.debug("Handling player action for {}".format(e))
             try:
                 afr.player.handle_player_action(action, e)
