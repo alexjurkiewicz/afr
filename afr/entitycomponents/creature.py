@@ -1,5 +1,6 @@
 from afr.entitycomponent import EntityComponent
 
+SLOTS = { 'humanoid': ['left hand', 'torso'] }
 
 class Creature(EntityComponent):
 
@@ -16,5 +17,10 @@ class Creature(EntityComponent):
 
         self.current_hp = max_hp
         self.alive = True
+        self.slots = dict.fromkeys(SLOTS.get(shape, []))
 
-        self.export = ['max_hp', 'current_hp', 'alive']
+        self.export = ['max_hp', 'current_hp', 'alive', 'slots']
+
+    def equip(self, item, slot=None):
+        """Equip an item. Slot is determined automatically if unspecified."""
+        raise NotImplemented
