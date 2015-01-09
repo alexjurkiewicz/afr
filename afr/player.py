@@ -112,9 +112,10 @@ def _do_equip(action, entity):
         raise ActionError("Unrecognised input '%r'." % item_num)
     # XXX: this shuffle is probably a sign of bad design
     item = entity.inventory[item_num]
-    del(entity.inventory[item_num])
     success = entity.equip(item)
-    if not success:
+    if success:
+        del(entity.inventory[item_num])
+    else:
         raise ActionError("Couldn't equip %s." % item.name)
 
 
