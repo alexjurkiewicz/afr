@@ -66,4 +66,4 @@ def draw_map(m, focus=None, clamp_to_map=True):
 
     # Ugly transformation since our buffer is by-column but we print by-row
     for line in range(CAMERA_TILES_Y):
-        print ''.join([i[line] for i in new_screen])
+        print(''.join([i[line] for i in new_screen]))

@@ -27,7 +27,7 @@ class Creature(EntityComponent):
     def modify_attribute(self, attrib, cur):
         """See if any equipped items modify the attrib."""
         val = cur
-        for item in self.slots.values():
+        for item in list(self.slots.values()):
             if not item:
                 continue
             val = item.get(attrib, val)

@@ -78,7 +78,7 @@ def _do_pickup(action, entity):
         for i in range(len(items)):
             prompt += '%s: %s\n' % (i, items[i])
         prompt += '\n'
-        item_num = raw_input(prompt)
+        item_num = input(prompt)
         try:
             item_num = int(item_num)
         except:
@@ -105,7 +105,7 @@ def _do_equip(action, entity):
     for i in range(len(entity.inventory)):
         prompt += '%s: %s\n' % (i, entity.inventory[i])
     prompt += '\n'
-    item_num = raw_input(prompt)
+    item_num = input(prompt)
     try:
         item_num = int(item_num)
     except:

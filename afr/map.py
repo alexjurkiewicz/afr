@@ -76,7 +76,7 @@ class Map(object):
 
     def updateTileNeighbors(self):
         """Rebuild the traversable neighbors list."""
-        for x, y in itertools.product(range(self.width), range(self.height)):
+        for x, y in itertools.product(list(range(self.width)), list(range(self.height))):
             node = self.getTile(x, y)
             node.clear_neighbors()
             # n = 0

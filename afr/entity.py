@@ -49,7 +49,7 @@ class Entity(object):
 
     def detach_component(self, name):
         """Detach EntityComponent by name."""
-        if name not in self.components.keys():
+        if name not in list(self.components.keys()):
             raise ValueError(
                 "Entity %s has no attached component named %s." %
                 (self.name, name))
@@ -72,7 +72,7 @@ class Entity(object):
         modifying a parent entity (eg sword with +str modifying the holder's
         strength))
         """
-        val = base if base else getattr(self, attrib)
+        val = base if base is not None else getattr(self, attrib)
         #logging.debug("Getting attribute %s for %s (initial: %s)",
                       #attrib, self.name, val)
         for c in self.components:

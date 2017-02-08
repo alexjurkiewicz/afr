@@ -59,31 +59,31 @@ class Fighter(EntityComponent):
         if attacker_str == 0 or defender_str > attacker_str:
             dmg = (defender_str - attacker_str) // 2
             self.owner.current_hp -= dmg
-            print("{attacker} ({attackerhp} hp) attacks "
+            print(("{attacker} ({attackerhp} hp) attacks "
                   "{defender} ({defenderhp} hp) but they block and "
                   "counterattack for {dmg} damage!"
                   .format(attacker=attacker.name,
                           attackerhp=attacker.current_hp,
                           defender=defender.name,
                           defenderhp=defender.current_hp,
-                          dmg=dmg))
+                          dmg=dmg)))
         elif defender_str == 0 or attacker_str > defender_str:
             dmg = (attacker_str - defender_str)
             defender.current_hp -= dmg
-            print("{attacker} ({attackerhp} hp) hits "
+            print(("{attacker} ({attackerhp} hp) hits "
                   "{defender} ({defenderhp} hp) for "
                   "{dmg} damage!"
                   .format(attacker=attacker.name,
                           attackerhp=attacker.current_hp,
                           defender=defender.name,
                           defenderhp=defender.current_hp,
-                          dmg=dmg))
+                          dmg=dmg)))
         else:
             print("Mutual block!")
 
         if self.owner.current_hp <= 0:
-            print("%s died!" % self.owner.name)
+            print(("%s died!" % self.owner.name))
             self.die()
         if defender.current_hp <= 0:
-            print("%s died!" % defender.name)
+            print(("%s died!" % defender.name))
             defender.die()
