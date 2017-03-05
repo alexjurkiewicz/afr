@@ -14,7 +14,7 @@ from afr import player
 from afr import screen
 from afr import util
 
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.INFO,
                     format="%(filename)s (%(funcName)s) %(message)s")
 
 MAP_WIDTH = 40
