@@ -85,13 +85,15 @@ def _do_pickup(action, entity):
             raise ActionError("Unrecognised input '%r'." % item_num)
         # XXX: this shuffle is probably a sign of bad design
     entity.pick_up(items[item_num])
+    print("Picked up %s" % items[item_num])
 
 
 def _do_show(action, entity):
     if action == 'show-inventory':
         message = 'Inventory:\n'
-        message += ', '.join(str(i) for i in entity.inventory)
-        raise ActionError(message)
+        for index, item in enumerate(entity.inventory):
+            print("%s: %s" % (index, item))
+        raise ActionError("Instant Turn")
 
 
 def _do_wait(action, entity):
